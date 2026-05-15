@@ -475,14 +475,15 @@ main {
   text-align: left;
   font-size: 0.9rem;
   line-height: 1.75;
-  margin-left: 10rem;
-  margin-right: 10rem;
+  margin-left: 7rem;
+  margin-right: 7rem;
+  font-weight: 400;
 }
 
 @media (max-width: 600px) {
   .post-content {
-    margin-left: 2rem;
-    margin-right: 2rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
   }
 }
 
