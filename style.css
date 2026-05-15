@@ -479,6 +479,13 @@ main {
   margin-right: 10rem;
 }
 
+@media (max-width: 600px) {
+  .post-content {
+    margin-left: 2rem;
+    margin-right: 2rem;
+  }
+}
+
 .post-content p {
   margin-bottom: 1.4em;
 }
