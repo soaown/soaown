@@ -157,12 +157,17 @@ main {
 }
 
 .item-meta {
-  font-size: 1.1rem;
+  font-size: 0.7rem;
   color: #030201;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 3rem;
+  padding: 0.1rem 0.7rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
+
 
 /* ===== 검색바 ===== */
 .search-section {
@@ -340,7 +345,7 @@ main {
 }
 
 .add-form #content-input {
-  font-size: 1.02rem;
+  font-size: 0.9rem;
   line-height: 1.75;
   border: none;
   padding: 1rem 0;
@@ -365,7 +370,6 @@ main {
   justify-content: flex-end;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(3, 2, 1, 0.08);
 }
 
 .form-buttons button {
@@ -468,7 +472,7 @@ main {
 }
 
 .post-content {
-  text-align: center;
+  text-align: left;
   font-size: 0.9rem;
   line-height: 1.75;
   margin-left: 10rem;
