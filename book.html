@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOOK | SOAOWN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body data-category="BOOK">
+
+  <header>
+    <p class="site-title">
+      <a href="index.html">SOAOWN</a>
+    </p>
+    <nav>
+      <ul>
+        <li><a href="book.html" class="active">BOOK</a></li>
+        <li><a href="blog.html">BLOG</a></li>
+        <li><a href="knowledge.html">KNOWLEDGE</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1 class="page-title">BOOK</h1>
+
+    <div class="search-section">
+      <span class="fake-search">( scan )</span>
+      <input type="text" id="search-input" class="search-input"
+        placeholder="search search search search search search search search............" oninput="handleSearch(event)">
+      <button id="add-btn" class="add-btn" onclick="openPasswordPopup()">( edit )</button>
+    </div>
+
+    <div class="add-section">
+      <form id="add-form" class="add-form" onsubmit="handleSubmit(event)" style="display:none;">
+        <input type="text" id="title-input" placeholder="제목" required>
+        <div class="meta-grid">
+          <label><span>date: </span><input type="date" id="date-input"></label>
+          <label><span>category: </span><textarea id="category-input" rows="1"></textarea></label>
+          <!-- <label><span>link: </span><textarea id="link-input" rows="1"></textarea></label> -->
+          <label class="link-field">
+            <span>link: </span>
+            <input type="url" id="link-input" placeholder="https://...">
+            <a id="link-preview" class="link-preview" target="_blank" rel="noopener noreferrer">↗ link</a>
+            <button type="button" id="link-edit-btn" class="link-edit-btn">edit</button>
+          </label>
+          <label><span>author: </span><textarea id="author-input" rows="1"></textarea></label>
+          <label><span>publisher: </span><textarea id="publisher-input" rows="1"></textarea></label>
+          <label><span>details: </span><textarea id="details-input" rows="1"></textarea></label>
+        </div>
+        <textarea id="content-input" placeholder="내용을 작성하세요..." required></textarea>
+        <div class="form-buttons">
+          <button type="button" onclick="hideAddForm()">취소</button>
+          <button type="submit">저장</button>
+        </div>
+      </form>
+    </div>
+
+    <ul class="item-list"></ul>
+  </main>
+
+  <button class="fab-top">⌃</button>
+  <script>
+    document.querySelector(".fab-top").addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
+  </script>
+  <div class="floating-text">
+    ©Collected since 2025-2026 Seoul by soaown
+  </div>
+
+  <div id="password-popup" class="password-popup" style="display:none;">
+    <div class="password-box">
+      <p>access log</p>
+
+      <input type="password" id="password-input" placeholder="••••">
+
+      <div class="password-buttons">
+        <button onclick="closePasswordPopup()">cancel</button>
+        <button onclick="submitPassword()">enter</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="error-popup" class="password-popup error" style="display:none;">
+    <div class="password-box">
+      <p class="error-text">
+        <img src="/soaown/assets/sleepy.png" class="sleepy-img">
+      </p>
+
+      <div class="password-buttons">
+        <button onclick="closeErrorPopup()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openPasswordPopup() {
+      const popup = document.getElementById("password-popup");
+      popup.style.display = "flex";
+      popup.classList.add("active");
+    }
+
+    function closePasswordPopup() {
+      const popup = document.getElementById("password-popup");
+      popup.style.display = "none";
+      popup.classList.remove("active");
+    }
+
+    function submitPassword() {
+      const password = document.getElementById("password-input").value;
+
+      if (password === "0310") {
+        closePasswordPopup();
+        showAddForm();
+      } else {
+        openErrorPopup();
+      }
+    }
+    function openErrorPopup() {
+      const popup = document.getElementById("error-popup");
+      popup.style.display = "flex";
+      popup.classList.add("active");
+    }
+
+    function closeErrorPopup() {
+      const popup = document.getElementById("error-popup");
+      popup.style.display = "none";
+      popup.classList.remove("active");
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="script.js"></script>
+
+</body>
+
+</html>
