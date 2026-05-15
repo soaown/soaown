@@ -438,8 +438,6 @@ function autoResizeTextarea(el) {
   el.style.height = el.scrollHeight + 'px';
 }
 
-documentnt.querySelectorAll('.add-form textarea').forEach(ta => {
+document.querySelectorAll('.add-form textarea').forEach(ta => {
   ta.addEventListener('input', () => autoResizeTextarea(ta));
-  // Enter 키로 줄.addEventListener('DOMContentLoaded', () => {
-  // ta.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
 });
