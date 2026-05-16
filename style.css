@@ -226,19 +226,20 @@ main {
   background: transparent;
   border: none;
   text-align: left;
-  max-width: 700px;
+  max-width: 970px;
   margin: 1rem auto 0;
 }
 
 .add-form #title-input {
   font-size: clamp(1.8rem, 3.5vw, 2.5rem);
   font-weight: 600;
+  font-family: inherit;
+  text-align: center;
   line-height: 1.25;
   letter-spacing: -0.01em;
   border: none;
   padding: 0.5rem 0;
   background: transparent;
-  font-family: inherit;
   color: #030201;
 }
 
@@ -527,18 +528,6 @@ main {
 
 .post-nav-item a:hover {
   text-decoration: none;
-}
-
-/* ===== 푸터 ===== */
-footer {
-  max-width: 1200px;
-  width: 100%;
-  padding: 2rem 0;
-  display: flex;
-  justify-content: flex-end;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: black;
 }
 
 /* ===== 모바일 반응형 ===== */
@@ -869,10 +858,13 @@ main,
 
 /* ===== 카테고리꾸미기창 ===== */
 .meta-grid {
-  display: flex;
+  display: inline-block;
   flex-direction: column;
   gap: 0.01rem;
   background: rgba(255, 255, 255, 0.18);
+  padding: 0.5rem 4rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   border-radius: 3rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
