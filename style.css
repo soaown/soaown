@@ -242,6 +242,7 @@ main {
   padding: 0.5rem 0;
   background: transparent;
   color: #030201;
+
 }
 
 .add-form #title-input::placeholder {
@@ -484,6 +485,11 @@ main {
   flex-direction: column;
   gap: 0.8rem;
   align-items: center;
+  max-width: 700px;
+  width: 100%;
+  text-align: center;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .post-title {
