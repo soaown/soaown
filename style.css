@@ -269,6 +269,46 @@ main {
   padding-top: 0.1rem;
 }
 
+/* ===== post 페이지 meta-grid ===== */
+.post-header .meta-grid {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.09rem;
+  text-align: left;
+  width: fit-content;
+  min-width: 520px;
+
+}
+
+.post-header .meta-grid label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.1rem;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.post-header .meta-grid span {
+  width: 80px;
+  flex-shrink: 0;
+  opacity: 0.45;
+  font-size: 0.8rem;
+  padding-top: 0.1rem;
+}
+
+.post-header .meta-grid p,
+.post-header .meta-grid a {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  font-family: inherit;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #030201;
+  text-decoration: none;
+}
+
 /* input · textarea 공통 - 둘 다 보이지 않게 */
 .add-form .meta-grid input,
 .add-form .meta-grid textarea {
@@ -322,7 +362,7 @@ main {
 
 .add-form #date-input {
   letter-spacing: -0.07em;
-  font-weight: 600;
+  font-weight: 400;
   font-family: "Inter", sans-serif;
 }
 
@@ -342,6 +382,20 @@ main {
 }
 
 .add-form #category-input::placeholder {
+  color: rgba(3, 2, 1, 0.4);
+}
+
+.add-form #content-input {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  border: none;
+  padding: 1rem 0;
+  min-height: 400px;
+  resize: vertical;
+  background: transparent;
+}
+
+.add-form #content-input::placeholder {
   color: rgba(3, 2, 1, 0.4);
 }
 
@@ -423,6 +477,10 @@ main {
 /* ===== 개별 글 페이지 ===== */
 .post-header {
   margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
 }
 
 .post-title {
@@ -436,19 +494,39 @@ main {
 .post-meta {
   font-size: 0.9rem;
   color: rgba(3, 2, 1, 0.5);
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 0.01rem;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 0.5rem 4rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 3rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
-.post-meta .author {
-  color: #030201;
-  font-weight: 700;
+.post-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  text-align: left;
+  width: 100%;
+}
+
+.post-meta span {
+  width: 90px;
+  opacity: 0.45;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.post-item p {
+  margin: 0;
 }
 
 .post-meta a {
   color: inherit;
-  text-decoration: none;
-}
-
-.post-meta a:hover {
   text-decoration: none;
 }
 
@@ -685,7 +763,7 @@ main,
   color: #1a0089;
   font-size: 1.2rem;
   font-weight: 500;
-  padding: 0.7rem 0;
+  padding: 1rem 0;
   width: auto;
   display: block;
   z-index: 10;
@@ -846,6 +924,8 @@ main,
   margin-top: 1rem;
   margin-bottom: 1rem;
   border-radius: 3rem;
+  width: 100%;
+  text-align: left;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
@@ -866,4 +946,14 @@ main,
   border: none;
   background: transparent;
   font-family: inherit;
+}
+
+.meta-grid label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.1rem;
+}
+
+.meta-grid p {
+  margin: 0;
 }

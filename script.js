@@ -244,7 +244,7 @@ async function renderPost() {
   const id = params.get('id');
 
   const titleEl = document.querySelector('.post-title');
-  const metaEl = document.querySelector('.post-meta');
+  const metaEl = document.querySelector('.meta-grid');
   const contentEl = document.querySelector('.post-content');
 
   if (!id) {
@@ -267,31 +267,64 @@ async function renderPost() {
   document.title = `${post.title} | SOAOWN`;
   titleEl.textContent = post.title;
 
-  let metaHTML = `<time>${escapeHtml(post.date)}</time>`;
+  let metaHTML = '';
+
+  if (post.date) {
+    metaHTML += `
+    <label>
+      <span>date:</span>
+      <p>${escapeHtml(post.date)}</p>
+    </label>
+  `;
+  }
 
   if (post.subcategory) {
-    metaHTML += ` · <span>${escapeHtml(post.subcategory)}</span>`;
-  }
-
-  if (post.author) {
-    metaHTML += ` · <span>${escapeHtml(post.author)}</span>`;
-  }
-
-  if (post.publisher) {
-    metaHTML += ` · <span>${escapeHtml(post.publisher)}</span>`;
-  }
-
-  if (post.details) {
-    metaHTML += ` · <span>${escapeHtml(post.details)}</span>`;
+    metaHTML += `
+    <label>
+      <span>category:</span>
+      <p>${escapeHtml(post.subcategory)}</p>
+    </label>
+  `;
   }
 
   if (post.link) {
     metaHTML += `
-    · <a href="${post.link}" target="_blank" rel="noopener noreferrer">
-      link
-    </a>
+    <label>
+      <span>link:</span>
+      <a href="${escapeHtml(post.link)}" target="_blank" rel="noopener noreferrer">
+        ${escapeHtml(post.link)}
+      </a>
+    </label>
   `;
   }
+
+  if (post.author) {
+    metaHTML += `
+    <label>
+      <span>author:</span>
+      <p>${escapeHtml(post.author)}</p>
+    </label>
+  `;
+  }
+
+  if (post.publisher) {
+    metaHTML += `
+    <label>
+      <span>publisher:</span>
+      <p>${escapeHtml(post.publisher)}</p>
+    </label>
+  `;
+  }
+
+  if (post.details) {
+    metaHTML += `
+    <label>
+      <span>details:</span>
+      <p>${escapeHtml(post.details)}</p>
+    </label>
+  `;
+  }
+
   metaEl.innerHTML = metaHTML;
 
   // 본문 - 줄바꿈을 문단으로 변환
