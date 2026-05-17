@@ -389,10 +389,9 @@ main {
 }
 
 .add-form #content-input {
-  min-height: 1073px;
   max-height: 1073px;
   width: 100%;
-  padding: 1rem 0;
+  padding: 1rem 0.5rem;
   resize: vertical;
   outline: none;
   border-radius: 10px;
