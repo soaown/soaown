@@ -490,3 +490,32 @@ document
     });
 
   });
+
+
+// ===== 제목 textarea 자동 높이 =====
+const titleInput = document.getElementById("title-input");
+
+if (titleInput) {
+
+  function autoResizeTitle() {
+    titleInput.style.height = "auto";
+    titleInput.style.height =
+      titleInput.scrollHeight + "px";
+  }
+
+  autoResizeTitle();
+
+  titleInput.addEventListener(
+    "input",
+    autoResizeTitle
+  );
+
+  titleInput.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+      }
+    }
+  );
+}
