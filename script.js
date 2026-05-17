@@ -519,3 +519,24 @@ if (titleInput) {
     }
   );
 }
+
+// ===== 엔터누르면비번써밋 =====
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const input =
+    document.getElementById("password-input");
+
+  if (input) {
+
+    input.addEventListener("keydown", (e) => {
+
+      if (e.key === "Enter") {
+
+        e.preventDefault();
+
+        submitPassword();
+      }
+    });
+  }
+});
