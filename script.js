@@ -472,3 +472,21 @@ function autoResizeTextarea(el) {
 document.querySelectorAll('.add-form textarea').forEach(ta => {
   ta.addEventListener('input', () => autoResizeTextarea(ta));
 });
+
+// ===== 수정창 카테고리 박스 늘어남 =====
+function resizeMetaInput(input) {
+  input.style.width =
+    Math.max(input.value.length + 2, 12) + 'ch';
+}
+
+document
+  .querySelectorAll('.meta-grid input')
+  .forEach(input => {
+
+    resizeMetaInput(input);
+
+    input.addEventListener('input', () => {
+      resizeMetaInput(input);
+    });
+
+  });
