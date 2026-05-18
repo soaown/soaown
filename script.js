@@ -142,7 +142,7 @@ async function handleSubmit(event) {
   const title = document.getElementById('title-input').value.trim();
   const dateRaw = document.getElementById('date-input').value;
   const subCategory = document.getElementById('category-input').value.trim();
-  const content = document.getElementById('content-input').value.trim();
+  const content = document.getElementById('content-input').innerHTML.trim();
   const link = document.getElementById('link-input').value.trim();
   const author = document.getElementById('author-input').value.trim();
   const publisher = document.getElementById('publisher-input').value.trim();
@@ -325,18 +325,7 @@ async function renderPost() {
 
   metaEl.innerHTML = metaHTML;
 
-  // 본문 - 줄바꿈을 문단으로 변환
-  contentEl.innerHTML = '';
-  post.content.split(/\n\n+/).forEach(paragraph => {
-    if (paragraph.trim()) {
-      const p = document.createElement('p');
-      paragraph.split('\n').forEach((line, i) => {
-        if (i > 0) p.appendChild(document.createElement('br'));
-        p.appendChild(document.createTextNode(line));
-      });
-      contentEl.appendChild(p);
-    }
-  });
+  contentEl.innerHTML = post.content || '';
 
   // 뒤로가기 링크 카테고리에 맞게 설정
   const backLink = document.querySelector('.post-back a');
@@ -385,7 +374,7 @@ async function loadEditPost(id) {
   document.getElementById('author-input').value = post.author || '';
   document.getElementById('publisher-input').value = post.publisher || '';
   document.getElementById('details-input').value = post.details || '';
-  document.getElementById('content-input').value = post.content || '';
+  document.getElementById('content-input').innerHTML = post.content || '';
   document.querySelectorAll('.add-form textarea').forEach(autoResizeTextarea);
 
   window.currentEditingId = id;
@@ -541,4 +530,313 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// ===== 제목 height 수정 1줄에서 두줄로 늘어나면 두줄로 height 조절 ====
+// ===== 그 툴바 ====
+// 굵게
+function formatText(command) {
+
+  const editor =
+    document.getElementById("content-input");
+
+  if (!editor) return;
+
+  editor.focus();
+
+  const selectedImage =
+    document.querySelector(".image-box.selected");
+
+  if (
+    selectedImage &&
+    (
+      command === "justifyCenter" ||
+      command === "justifyLeft" ||
+      command === "justifyRight"
+    )
+  ) {
+
+    if (command === "justifyCenter") {
+      selectedImage.style.display = "block";
+      selectedImage.style.margin = "1rem auto";
+    }
+
+    if (command === "justifyLeft") {
+      selectedImage.style.display = "block";
+      selectedImage.style.margin = "1rem 0";
+    }
+
+    if (command === "justifyRight") {
+      selectedImage.style.display = "block";
+      selectedImage.style.margin = "1rem 0 1rem auto";
+    }
+
+    return;
+  }
+
+  document.execCommand(
+    command,
+    false,
+    null
+  );
+}
+
+// 사진 버튼
+function insertImage() {
+
+  const imageInput =
+    document.getElementById("image-input");
+
+  if (!imageInput) return;
+
+  imageInput.click();
+}
+
+// 이미지 삽입
+document
+  .getElementById("image-input")
+  ?.addEventListener(
+    "change",
+    function () {
+
+      const file = this.files[0];
+
+      if (!file) return;
+
+      const reader =
+        new FileReader();
+
+      reader.onload = function (e) {
+
+        const editor =
+          document.getElementById(
+            "content-input"
+          );
+
+        if (!editor) return;
+
+        const box =
+          document.createElement("span");
+
+        box.className = "image-box";
+        box.contentEditable = "false";
+        box.style.width = "300px";
+        box.style.height = "auto";
+
+        const img =
+          document.createElement("img");
+
+        img.src = e.target.result;
+
+        box.appendChild(img);
+
+        const handle =
+          document.createElement("div");
+
+        handle.className =
+          "resize-handle";
+
+        box.appendChild(handle);
+
+        editor.appendChild(box);
+
+        editor.appendChild(document.createElement("br"));
+      };
+
+      reader.readAsDataURL(file);
+
+      this.value = "";
+    }
+  );
+
+// 글씨 색상
+function setTextColor(color) {
+  const editor =
+    document.getElementById("content-input");
+
+  if (!editor) return;
+
+  editor.focus();
+
+  document.execCommand(
+    "foreColor",
+    false,
+    color
+  );
+}
+
+// 글씨 하이라이트
+function setHighlight(color) {
+  const editor =
+    document.getElementById("content-input");
+
+  if (!editor) return;
+
+  editor.focus();
+
+  document.execCommand(
+    "hiliteColor",
+    false,
+    color
+  );
+}
+
+// ===== 각주 기능 =====
+let footnoteCount = 1;
+
+function insertFootnote() {
+  const editor =
+    document.getElementById("content-input");
+
+  if (!editor) return;
+
+  editor.focus();
+
+  const note = prompt("각주 내용을 입력해줘");
+
+  if (!note) return;
+
+  const number = footnoteCount++;
+
+  const sup =
+    document.createElement("sup");
+
+  sup.className = "footnote-ref";
+  sup.textContent = `[${number}]`;
+  sup.style.cursor = "pointer";
+
+  sup.addEventListener("click", () => {
+    document
+      .getElementById(`note-${number}`)
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+  });
+  sup.id = `ref-${number}`;
+  sup.title = note;
+  sup.dataset.note = note;
+  sup.dataset.number = number;
+
+  const selection =
+    window.getSelection();
+
+  if (selection.rangeCount) {
+    const range =
+      selection.getRangeAt(0);
+
+    range.insertNode(sup);
+  } else {
+    editor.appendChild(sup);
+  }
+
+  updateFootnoteList();
+}
+
+function updateFootnoteList() {
+  const editor =
+    document.getElementById("content-input");
+
+  if (!editor) return;
+
+  editor
+    .querySelector(".footnote-list")
+    ?.remove();
+
+  const refs =
+    editor.querySelectorAll(".footnote-ref");
+
+  if (refs.length === 0) return;
+
+  const list =
+    document.createElement("div");
+
+  list.className = "footnote-list";
+
+  refs.forEach((ref, index) => {
+    const item =
+      document.createElement("p");
+
+    const number =
+      ref.dataset.number || index + 1;
+
+    item.innerHTML =
+      `
+      <a id="note-${number}"></a>
+      <span>[${number}]</span>
+      ${ref.dataset.note || ""}
+      <a href="#ref-${number}">↩</a>
+      `;
+
+    list.appendChild(item);
+  });
+
+  editor.appendChild(list);
+}
+
+// ===== 이미지 선택 =====
+document.addEventListener("click", function (e) {
+
+  document
+    .querySelectorAll(".image-box")
+    .forEach(box => {
+      box.classList.remove("selected");
+    });
+
+  const box =
+    e.target.closest(".image-box");
+
+  if (box) {
+    box.classList.add("selected");
+  }
+});
+
+// ===== 이미지 리사이즈 =====
+document.addEventListener("mousedown", function (e) {
+
+  if (
+    !e.target.classList.contains(
+      "resize-handle"
+    )
+  ) return;
+
+  e.preventDefault();
+
+  const box =
+    e.target.parentElement;
+
+  const startX = e.clientX;
+
+  const startWidth =
+    box.offsetWidth;
+
+  function resize(ev) {
+
+    const newWidth =
+      startWidth +
+      (ev.clientX - startX);
+
+    box.style.width =
+      newWidth + "px";
+  }
+
+  function stopResize() {
+
+    document.removeEventListener(
+      "mousemove",
+      resize
+    );
+
+    document.removeEventListener(
+      "mouseup",
+      stopResize
+    );
+  }
+
+  document.addEventListener(
+    "mousemove",
+    resize
+  );
+
+  document.addEventListener(
+    "mouseup",
+    stopResize
+  );
+});

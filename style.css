@@ -398,6 +398,8 @@ main {
   outline: none;
   border-radius: 10px;
   border: 3px solid #387bbe;
+  background: white;
+  font-size: 0.8rem;
 }
 
 .add-form #content-input::placeholder {
@@ -1005,4 +1007,165 @@ main,
   flex: 1;
   width: 100%;
   min-width: 0;
+}
+
+/* ===== 툴바 ===== */
+.add-form #content-input:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(81, 81, 81, 0.9);
+  pointer-events: none;
+}
+
+/* ===== 에디터 툴바 ===== */
+.editor-toolbar {
+  display: flex;
+  gap: 1.5rem;
+  margin: 1rem 0;
+  background: none;
+  position: relative;
+}
+
+.editor-toolbar button {
+  border-radius: 800px;
+  background: #b7cf4f;
+  color: rgb(255, 255, 255);
+  padding: 0.1rem 1rem;
+  font-family: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+  border: none;
+  pointer-events: auto;
+}
+
+/* 글쓰기창 + 완료창 공통 이미지 */
+.image-box {
+  display: block;
+  max-width: 100%;
+  margin: 1rem 0;
+}
+
+.image-box img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 글쓰기창에서만 이미지 크기 조절 가능 */
+#content-input .image-box {
+  display: inline-block;
+  min-width: 80px;
+  min-height: 80px;
+  border: 1px dashed rgba(3, 2, 1, 0.15);
+}
+
+#content-input .image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 완료된 글에서는 이미지가 글 흐름 안에 고정 */
+.post-content .image-box {
+  resize: none;
+  overflow: visible;
+  border: none;
+}
+
+.footnote-ref {
+  font-size: 0.75em;
+  vertical-align: super;
+  color: #1a0089;
+  cursor: help;
+}
+
+.footnote-list {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(3, 2, 1, 0.15);
+  font-size: 0.85rem;
+  color: rgba(3, 2, 1, 0.75);
+}
+
+.footnote-list p {
+  margin-bottom: 0.4rem;
+}
+
+.footnote-list span {
+  color: #1a0089;
+  margin-right: 0.4rem;
+}
+
+/* ===== 이미지 박스 ===== */
+.image-box {
+  position: relative;
+  display: inline-block;
+  margin: 1rem auto;
+  max-width: 100%;
+}
+
+.image-box img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 리사이즈 핸들 */
+.resize-handle {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border: 1px solid #1a0089;
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  cursor: nwse-resize;
+}
+
+/* 완료된 글에서는 이미지 리사이즈 핸들 숨김 */
+.post-content .resize-handle {
+  display: none;
+}
+
+/* 완료된 글에서는 선택/수정 느낌 제거 */
+.post-content .image-box {
+  outline: none;
+  cursor: default;
+  pointer-events: auto;
+}
+
+.post-content .image-box.selected {
+  outline: none;
+}
+
+.editor-box {
+  background: rgb(255, 255, 255);
+  border: 3px solid #387bbe;
+  width: 100%;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.editor-box .editor-toolbar {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  right: 0.6rem;
+  z-index: 20;
+  background: transparent;
+  border-radius: 10px;
+  margin: 0;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  pointer-events: none;
+}
+
+.editor-box #content-input {
+  border: none;
+  background: transparent;
+  min-height: 420px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 3.5rem 1rem 1rem;
 }
