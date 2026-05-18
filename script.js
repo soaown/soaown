@@ -327,7 +327,8 @@ async function renderPost() {
 
   contentEl.innerHTML = post.content || '';
   contentEl.querySelectorAll(".footnote-ref").forEach(ref => {
-  ref.removeAttribute("title");});
+    ref.removeAttribute("title");
+  });
 
   // 뒤로가기 링크 카테고리에 맞게 설정
   const backLink = document.querySelector('.post-back a');
@@ -367,6 +368,8 @@ async function loadEditPost(id) {
 
   if (!post) return;
 
+  window.currentEditingId = id;
+
   showAddForm();
 
   document.getElementById('title-input').value = post.title || '';
@@ -381,8 +384,6 @@ async function loadEditPost(id) {
     ref.removeAttribute("title");
   });
   document.querySelectorAll('.add-form textarea').forEach(autoResizeTextarea);
-
-  window.currentEditingId = id;
 }
 
 // knowledge 페이지 잠금
@@ -413,11 +414,12 @@ function submitPassword() {
     closePasswordPopup();
     if (document.body.dataset.category == "KNOWLEDGE") {
       unlockPage();
-    } else {
-      showAddForm();
+      if (window.currentEditingId) {
+        showAddForm();
+      }
     }
   } else {
-    openErrorPopup();
+    showAddForm();
   }
 }
 // 🔒 KNOWLEDGE 잠금/해제
