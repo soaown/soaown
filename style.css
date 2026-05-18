@@ -1087,11 +1087,11 @@ main,
   position: absolute;
   z-index: 9999;
   max-width: 260px;
-  padding: 0.7rem 0.8rem;
-  background: white;
+  padding: 0.4rem 1rem;
+  background: #ff5e33;
   border: none;
   border-radius: 800px;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 

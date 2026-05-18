@@ -599,65 +599,85 @@ document
   .getElementById("image-input")
   ?.addEventListener(
     "change",
-    function () {
+    async function () {
 
       const file = this.files[0];
 
       if (!file) return;
 
-      const reader =
-        new FileReader();
+      const editor =
+        document.getElementById(
+          "content-input"
+        );
 
-      reader.onload = function (e) {
+      if (!editor) return;
 
-        const editor =
-          document.getElementById(
-            "content-input"
-          );
+      // ===== Supabase Storage에 이미지 업로드 =====
+      const fileExt =
+        file.name.split(".").pop();
 
-        if (!editor) return;
+      const fileName =
+        `${Date.now()}-${Math.random()}.${fileExt}`;
 
-        const box =
-          document.createElement("span");
+      const filePath =
+        `posts/${fileName}`;
 
-        box.className = "image-box";
-        box.contentEditable = "false";
-        box.style.width = "300px";
-        box.style.height = "auto";
+      const { error } = await db.storage
+        .from("post-images")
+        .upload(filePath, file);
 
-        const img =
-          document.createElement("img");
+      if (error) {
+        console.error(error);
+        alert("이미지 업로드 실패");
+        return;
+      }
 
-        img.src = e.target.result;
+      const { data } = db.storage
+        .from("post-images")
+        .getPublicUrl(filePath);
 
-        box.appendChild(img);
+      const box =
+        document.createElement("span");
 
-        const handle =
-          document.createElement("div");
+      box.className = "image-box";
+      box.contentEditable = "false";
+      box.style.width = "300px";
+      box.style.height = "auto";
 
-        handle.className =
-          "resize-handle";
+      const img =
+        document.createElement("img");
 
-        box.appendChild(handle);
+      // 기존 e.target.result 대신 publicUrl 사용
+      img.src = data.publicUrl;
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.fetchPriority = "low";
 
-        const footnoteList =
-          editor.querySelector(".footnote-list");
+      box.appendChild(img);
 
-        if (footnoteList) {
-          editor.insertBefore(box, footnoteList);
-          editor.insertBefore(
-            document.createElement("br"),
-            footnoteList
-          );
-        } else {
-          editor.appendChild(box);
-          editor.appendChild(
-            document.createElement("br")
-          );
-        }
-      };
+      const handle =
+        document.createElement("div");
 
-      reader.readAsDataURL(file);
+      handle.className =
+        "resize-handle";
+
+      box.appendChild(handle);
+
+      const footnoteList =
+        editor.querySelector(".footnote-list");
+
+      if (footnoteList) {
+        editor.insertBefore(box, footnoteList);
+        editor.insertBefore(
+          document.createElement("br"),
+          footnoteList
+        );
+      } else {
+        editor.appendChild(box);
+        editor.appendChild(
+          document.createElement("br")
+        );
+      }
 
       this.value = "";
     }
@@ -706,7 +726,7 @@ function insertFootnote() {
 
   editor.focus();
 
-  const note = prompt("각주 내용을 입력해줘");
+  const note = prompt("placeholder=Enter annotation(optical)");
   if (!note) return;
 
   const number = footnoteCount++;
