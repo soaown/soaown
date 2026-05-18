@@ -326,6 +326,8 @@ async function renderPost() {
   metaEl.innerHTML = metaHTML;
 
   contentEl.innerHTML = post.content || '';
+  contentEl.querySelectorAll(".footnote-ref").forEach(ref => {
+  ref.removeAttribute("title");});
 
   // 뒤로가기 링크 카테고리에 맞게 설정
   const backLink = document.querySelector('.post-back a');
@@ -375,6 +377,9 @@ async function loadEditPost(id) {
   document.getElementById('publisher-input').value = post.publisher || '';
   document.getElementById('details-input').value = post.details || '';
   document.getElementById('content-input').innerHTML = post.content || '';
+  document.querySelectorAll(".footnote-ref").forEach(ref => {
+    ref.removeAttribute("title");
+  });
   document.querySelectorAll('.add-form textarea').forEach(autoResizeTextarea);
 
   window.currentEditingId = id;
@@ -709,7 +714,6 @@ function insertFootnote() {
   const sup = document.createElement("sup");
   sup.className = "footnote-ref";
   sup.textContent = `[${number}]`;
-  sup.title = note;
   sup.dataset.note = note;
   sup.dataset.number = number;
   sup.contentEditable = "false";

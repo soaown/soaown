@@ -1075,7 +1075,7 @@ main,
   font-size: 0.75em;
   vertical-align: super;
   color: #1a0089;
-  cursor: help;
+  cursor: pointer;
 }
 
 .after-footnote {
