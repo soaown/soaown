@@ -1016,13 +1016,13 @@ main,
   pointer-events: none;
 }
 
-/* ===== 에디터 툴바 ===== */
 .editor-toolbar {
   display: flex;
   gap: 1.5rem;
   margin: 1rem 0;
   background: none;
   position: relative;
+  justify-content: center;
 }
 
 .editor-toolbar button {
@@ -1078,21 +1078,21 @@ main,
   cursor: help;
 }
 
-.footnote-list {
-  margin-top: 3rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(3, 2, 1, 0.15);
+.after-footnote {
+  font-size: 0.8rem;
+  vertical-align: baseline;
+}
+
+.footnote-popup {
+  position: absolute;
+  z-index: 9999;
+  max-width: 260px;
+  padding: 0.7rem 0.8rem;
+  background: white;
+  border: none;
+  border-radius: 800px;
   font-size: 0.85rem;
-  color: rgba(3, 2, 1, 0.75);
-}
-
-.footnote-list p {
-  margin-bottom: 0.4rem;
-}
-
-.footnote-list span {
-  color: #1a0089;
-  margin-right: 0.4rem;
+  line-height: 1.5;
 }
 
 /* ===== 이미지 박스 ===== */

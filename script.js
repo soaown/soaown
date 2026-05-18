@@ -635,9 +635,21 @@ document
 
         box.appendChild(handle);
 
-        editor.appendChild(box);
+        const footnoteList =
+          editor.querySelector(".footnote-list");
 
-        editor.appendChild(document.createElement("br"));
+        if (footnoteList) {
+          editor.insertBefore(box, footnoteList);
+          editor.insertBefore(
+            document.createElement("br"),
+            footnoteList
+          );
+        } else {
+          editor.appendChild(box);
+          editor.appendChild(
+            document.createElement("br")
+          );
+        }
       };
 
       reader.readAsDataURL(file);
@@ -690,85 +702,39 @@ function insertFootnote() {
   editor.focus();
 
   const note = prompt("각주 내용을 입력해줘");
-
   if (!note) return;
 
   const number = footnoteCount++;
 
-  const sup =
-    document.createElement("sup");
-
+  const sup = document.createElement("sup");
   sup.className = "footnote-ref";
   sup.textContent = `[${number}]`;
-  sup.style.cursor = "pointer";
-
-  sup.addEventListener("click", () => {
-    document
-      .getElementById(`note-${number}`)
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-      });
-  });
-  sup.id = `ref-${number}`;
   sup.title = note;
   sup.dataset.note = note;
   sup.dataset.number = number;
+  sup.contentEditable = "false";
 
-  const selection =
-    window.getSelection();
+  const after = document.createElement("span");
+  after.className = "after-footnote";
+  after.innerHTML = "&nbsp;";
+
+  const selection = window.getSelection();
 
   if (selection.rangeCount) {
-    const range =
-      selection.getRangeAt(0);
+    const range = selection.getRangeAt(0);
 
+    range.insertNode(after);
     range.insertNode(sup);
+
+    range.setStartAfter(after);
+    range.setEndAfter(after);
+
+    selection.removeAllRanges();
+    selection.addRange(range);
   } else {
     editor.appendChild(sup);
+    editor.appendChild(after);
   }
-
-  updateFootnoteList();
-}
-
-function updateFootnoteList() {
-  const editor =
-    document.getElementById("content-input");
-
-  if (!editor) return;
-
-  editor
-    .querySelector(".footnote-list")
-    ?.remove();
-
-  const refs =
-    editor.querySelectorAll(".footnote-ref");
-
-  if (refs.length === 0) return;
-
-  const list =
-    document.createElement("div");
-
-  list.className = "footnote-list";
-
-  refs.forEach((ref, index) => {
-    const item =
-      document.createElement("p");
-
-    const number =
-      ref.dataset.number || index + 1;
-
-    item.innerHTML =
-      `
-      <a id="note-${number}"></a>
-      <span>[${number}]</span>
-      ${ref.dataset.note || ""}
-      <a href="#ref-${number}">↩</a>
-      `;
-
-    list.appendChild(item);
-  });
-
-  editor.appendChild(list);
 }
 
 // ===== 이미지 선택 =====
@@ -839,4 +805,28 @@ document.addEventListener("mousedown", function (e) {
     "mouseup",
     stopResize
   );
+});
+
+// ===== 각주 팝업 =====
+document.addEventListener("click", function (e) {
+  const ref = e.target.closest(".footnote-ref");
+
+  document.querySelector(".footnote-popup")?.remove();
+
+  if (!ref) return;
+
+  const popup = document.createElement("div");
+  popup.className = "footnote-popup";
+  popup.textContent =
+    ref.dataset.note || ref.title || "";
+
+  document.body.appendChild(popup);
+
+  const rect = ref.getBoundingClientRect();
+
+  popup.style.left =
+    rect.left + window.scrollX + "px";
+
+  popup.style.top =
+    rect.bottom + window.scrollY + 8 + "px";
 });
