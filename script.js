@@ -540,3 +540,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+// ===== 제목 height 수정 1줄에서 두줄로 늘어나면 두줄로 height 조절 ====

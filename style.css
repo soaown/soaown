@@ -238,18 +238,20 @@ main {
   text-align: center;
   line-height: 1.25;
   letter-spacing: -0.01em;
+
   border: none;
   padding: 0.5rem 0;
   background: transparent;
   color: #030201;
+
   width: 60%;
+  height: 1.7em;
+  min-height: 1.7em;
   resize: none;
   overflow: hidden;
-  min-height: 3.2rem;
   outline: none;
   box-shadow: none;
-  word-break: keep-all;
-  overflow-wrap: break-word;
+  display: block;
 }
 
 .add-form #title-input::placeholder {
