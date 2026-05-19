@@ -28,7 +28,6 @@
 
   <main>
     <h1 class="page-title">KNOWLEDGE</h1>
-
     <div class="search-section">
       <span class="fake-search">( scan )</span>
       <input type="text" id="search-input" class="search-input"
@@ -47,7 +46,24 @@
           <label><span>publisher: </span><input type="text" id="publisher-input"></label>
           <label><span>details: </span><input type="text" id="details-input"></label>
         </div>
-        <textarea id="content-input" placeholder="내용을 작성하세요..." required></textarea>
+        <div class="editor-box">
+          <div class="editor-toolbar">
+            <button type="button" onclick="formatText('bold')">B</button>
+            <button type="button" onclick="formatText('justifyCenter')">=</button>
+            <button type="button" onclick="setTextColor('#ff0000')">R</button>
+            <button type="button" onclick="setTextColor('#ffffff')">W</button>
+            <button type="button" onclick="setTextColor('#0000ff')">B</button>
+            <button type="button" onclick="setHighlight('#7CFF8A')">초록</button>
+            <button type="button" onclick="setHighlight('#FFB6D9')">핑크</button>
+            <button type="button" onclick="setHighlight('#9FD7FF')">파랑</button>
+            <button type="button" onclick="setHighlight('#ffffff')">흰색</button>
+            <button type="button" onclick="setHighlight('#FFB86B')">주황</button>
+            <button type="button" onclick="insertFootnote()">[^]</button>
+            <button type="button" onclick="insertImage()">PHOTO</button>
+          </div>
+          <div id="content-input" contenteditable="true" data-placeholder="내용을 작성하세요..."></div>
+        </div>
+        <input type="file" id="image-input" accept="image/*" style="display:none;">
         <div class="form-buttons">
           <button type="button" onclick="hideAddForm()">취소</button>
           <button type="submit">저장</button>
