@@ -1171,7 +1171,7 @@ main,
 /* ===== ADMIN 버튼 ===== */
 .admin-btn {
   background: white;
-  border: none;
+  border: 1.5px solid #b7cf4f;
   cursor: pointer;
   font-family: inherit;
   font-weight: 700;
@@ -1207,4 +1207,6 @@ body.admin-mode .post-actions {
 /* ===== 관리자 모드 로그인시 admin 색깔 ===== */
 body.admin-mode .admin-btn {
   background: #b7cf4f;
+  color: white;
+  border-color: #b7cf4f;
 }

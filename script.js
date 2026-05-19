@@ -392,87 +392,6 @@ async function loadEditPost(id) {
   });
   document.querySelectorAll('.add-form textarea').forEach(autoResizeTextarea);
 }
-
-// knowledge 페이지 잠금
-function openPasswordPopup() {
-  const popup = document.getElementById("password-popup");
-  popup.style.display = "flex";
-}
-function closePasswordPopup() {
-  const popup = document.getElementById("password-popup");
-  popup.style.display = "none";
-}
-function openErrorPopup() {
-  const popup = document.getElementById("error-popup");
-  if (popup) popup.style.display = "flex";
-}
-
-function closeErrorPopup() {
-  const popup = document.getElementById("error-popup");
-  if (popup) popup.style.display = "none";
-}
-// 🔐 비밀번호 체크
-function submitPassword() {
-  const input = document.getElementById("password-input");
-  const password = input ? input.value : "";
-
-  if (password === "0310") {
-    closePasswordPopup();
-
-    if (document.body.dataset.category === "KNOWLEDGE") {
-      sessionStorage.setItem("knowledgeUnlocked", "true");
-      unlockPage();
-
-      if (window.currentEditingId) {
-        showAddForm();
-      }
-
-    } else {
-      showAddForm();
-    }
-
-  } else {
-    openErrorPopup();
-  }
-}
-
-// 🔒 KNOWLEDGE 잠금/해제
-function lockPage() {
-  const main = document.querySelector("main");
-  if (main) main.style.display = "none";
-}
-
-function unlockPage() {
-  const main = document.querySelector("main");
-  if (main) main.style.display = "block";
-}
-// 🚀 페이지 로딩 시 실행
-document.addEventListener("DOMContentLoaded", () => {
-
-  const isKnowledge =
-    document.body.dataset.category === "KNOWLEDGE";
-
-  if (isKnowledge) {
-
-    const unlocked =
-      sessionStorage.getItem("knowledgeUnlocked");
-
-    if (unlocked === "true") {
-
-      unlockPage();
-
-    } else {
-
-      lockPage();
-
-      setTimeout(() => {
-        openPasswordPopup();
-      }, 50);
-
-    }
-  }
-});
-
 // ===== textarea 자동 높이 조절 =====
 function autoResizeTextarea(el) {
   el.style.height = 'auto';
@@ -877,13 +796,17 @@ function isAdminMode() {
 }
 
 function applyAdminMode() {
-  document.body.classList.toggle(
-    "admin-mode",
-    isAdminMode()
-  );
+  document.body.classList.toggle("admin-mode", isAdminMode());
 }
 
 document.addEventListener(
   "DOMContentLoaded",
   applyAdminMode
 );
+
+function guardKnowledge(event) {
+  if (!isAdminMode()) {
+    event.preventDefault();
+    alert("ADMIN");
+  }
+}

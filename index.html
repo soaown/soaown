@@ -21,7 +21,7 @@
       <ul>
         <li><a href="book.html">BOOK</a></li>
         <li><a href="blog.html">BLOG</a></li>
-        <li><a href="knowledge.html">KNOWLEDGE</a></li>
+        <li><a href="knowledge.html" onclick="guardKnowledge(event)">KNOWLEDGE</a></li>
       </ul>
     </nav>
   </header>
@@ -57,11 +57,22 @@
     }
 
     function openAdminPopup() {
-      document.getElementById("admin-popup").style.display = "flex";
+      const popup = document.getElementById("admin-popup") || document.getElementById("password-popup");
+
+      if (!popup) {
+        alert("ADMIN");
+        return;
+      }
+
+      popup.style.display = "flex";
     }
 
     function closeAdminPopup() {
-      document.getElementById("admin-popup").style.display = "none";
+      const popup = document.getElementById("admin-popup") || document.getElementById("password-popup");
+
+      if (!popup) return;
+
+      popup.style.display = "none";
     }
 
     function submitAdminPassword() {

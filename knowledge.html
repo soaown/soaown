@@ -21,7 +21,7 @@
       <ul>
         <li><a href="book.html">BOOK</a></li>
         <li><a href="blog.html">BLOG</a></li>
-        <li><a href="knowledge.html" class="active">KNOWLEDGE</a></li>
+        <li><a href="knowledge.html" class="active" onclick="guardKnowledge(event)">KNOWLEDGE</a></li>
       </ul>
     </nav>
   </header>
@@ -85,31 +85,6 @@
   </script>
   <div class="floating-text">
     ©Collected since 2025-2026 Seoul by soaown
-  </div>
-
-  <div id="password-popup" class="password-popup" style="display:none;">
-    <div class="password-box">
-      <p>access log</p>
-
-      <input type="password" id="password-input" placeholder="••••">
-
-      <div class="password-buttons">
-        <button onclick="closePasswordPopup()">cancel</button>
-        <button onclick="submitPassword()">enter</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="error-popup" class="password-popup" style="display:none;">
-    <div class="password-box">
-      <p class="error-text">
-        <img src="/soaown/assets/sleepy.png" class="sleepy-img">
-      </p>
-
-      <div class="password-buttons">
-        <button onclick="closeErrorPopup()">OK</button>
-      </div>
-    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
