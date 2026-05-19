@@ -95,6 +95,13 @@
       document.getElementById("error-popup").style.display = "none";
     }
 
+    function guardKnowledge(event) {
+      if (!isAdminMode()) {
+        event.preventDefault();
+        openAdminPopup();
+      }
+    }
+
     document.addEventListener("DOMContentLoaded", applyAdminMode);
   </script>
 
@@ -114,7 +121,7 @@
 
   <div id="admin-popup" class="password-popup" style="display:none;">
     <div class="password-box">
-      <p>password</p>
+      <p>access log</p>
 
       <input type="password" id="admin-password-input" placeholder="••••">
 

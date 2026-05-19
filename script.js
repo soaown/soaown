@@ -810,3 +810,9 @@ function guardKnowledge(event) {
     alert("ADMIN");
   }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+  if (document.body.dataset.category === "KNOWLEDGE" && !isAdminMode()) {
+    location.href = "index.html";
+  }
+});
