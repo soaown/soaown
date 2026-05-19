@@ -107,18 +107,25 @@ async function renderList() {
 }
 
 function showAddForm() {
-  document.getElementById('add-form').style.display = 'flex';
-  document.getElementById('add-btn').style.display = 'none';
+  const form = document.getElementById("add-form");
+  const addBtn = document.getElementById("add-btn");
 
-  // 글쓰기 화면일 때는 다른 요소들 숨김
-  const pageTitle = document.querySelector('.page-title');
-  const searchSection = document.querySelector('.search-section');
-  const itemList = document.querySelector('.item-list');
-  if (pageTitle) pageTitle.style.display = 'none';
-  if (searchSection) searchSection.style.display = 'none';
-  if (itemList) itemList.style.display = 'none';
+  if (!form) return;
 
-  document.getElementById('title-input').focus();
+  form.style.display = "flex";
+  if (addBtn) addBtn.style.display = "none";
+
+  const pageTitle = document.querySelector(".page-title");
+  const searchSection = document.querySelector(".search-section");
+  const itemList = document.querySelector(".item-list");
+
+  if (pageTitle) pageTitle.style.display = "none";
+  if (searchSection) searchSection.style.display = "none";
+  if (itemList) itemList.style.display = "none";
+
+  const titleInput = document.getElementById("title-input");
+  if (titleInput) titleInput.focus();
+
   window.scrollTo(0, 0);
 }
 
@@ -407,21 +414,28 @@ function closeErrorPopup() {
 // 🔐 비밀번호 체크
 function submitPassword() {
   const input = document.getElementById("password-input");
-  const password = input ? input.value : '';
+  const password = input ? input.value : "";
 
   if (password === "0310") {
-    sessionStorage.setItem("knowledgeUnlocked", "true");
     closePasswordPopup();
-    if (document.body.dataset.category == "KNOWLEDGE") {
+
+    if (document.body.dataset.category === "KNOWLEDGE") {
+      sessionStorage.setItem("knowledgeUnlocked", "true");
       unlockPage();
+
       if (window.currentEditingId) {
         showAddForm();
       }
+
+    } else {
+      showAddForm();
     }
+
   } else {
-    showAddForm();
+    openErrorPopup();
   }
 }
+
 // 🔒 KNOWLEDGE 잠금/해제
 function lockPage() {
   const main = document.querySelector("main");
