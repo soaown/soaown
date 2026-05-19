@@ -40,17 +40,30 @@
         <textarea id="title-input" placeholder="제목" required rows="1"></textarea>
         <div class="meta-grid">
           <label><span>date: </span><input type="date" id="date-input"></label>
-          <label><span>category: </span><textarea id="category-input" rows="1"></textarea></label>
-          <!-- <label><span>link: </span><textarea id="link-input" rows="1"></textarea></label> -->
-          <label class="link-field">
-            <span>link: </span>
-            <input type="url" id="link-input" placeholder="https://...">
-          </label>
-          <label><span>author: </span><textarea id="author-input" rows="1"></textarea></label>
-          <label><span>publisher: </span><textarea id="publisher-input" rows="1"></textarea></label>
-          <label><span>details: </span><textarea id="details-input" rows="1"></textarea></label>
+          <label><span>category: </span><input type="text" id="category-input"></label>
+          <label><span>link: </span><input type="url" id="link-input"></label>
+          <label><span>author: </span><input type="text" id="author-input"></label>
+          <label><span>publisher: </span><input type="text" id="publisher-input"></label>
+          <label><span>details: </span><input type="text" id="details-input"></label>
         </div>
-        <textarea id="content-input" placeholder="내용을 작성하세요..." required></textarea>
+        <div class="editor-box">
+          <div class="editor-toolbar">
+            <button type="button" onclick="formatText('bold')">B</button>
+            <button type="button" onclick="formatText('justifyCenter')">=</button>
+            <button type="button" onclick="setTextColor('#ff0000')">R</button>
+            <button type="button" onclick="setTextColor('#ffffff')">W</button>
+            <button type="button" onclick="setTextColor('#0000ff')">B</button>
+            <button type="button" onclick="setHighlight('#7CFF8A')">초록</button>
+            <button type="button" onclick="setHighlight('#FFB6D9')">핑크</button>
+            <button type="button" onclick="setHighlight('#9FD7FF')">파랑</button>
+            <button type="button" onclick="setHighlight('#ffffff')">흰색</button>
+            <button type="button" onclick="setHighlight('#FFB86B')">주황</button>
+            <button type="button" onclick="insertFootnote()">[^]</button>
+            <button type="button" onclick="insertImage()">PHOTO</button>
+          </div>
+          <div id="content-input" contenteditable="true" data-placeholder="내용을 작성하세요..."></div>
+        </div>
+        <input type="file" id="image-input" accept="image/*" style="display:none;">
         <div class="form-buttons">
           <button type="button" onclick="hideAddForm()">취소</button>
           <button type="submit">저장</button>

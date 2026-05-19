@@ -345,7 +345,6 @@ main {
   word-break: break-word;
   line-height: 1.5;
   display: block;
-  vertical-align: top;
   width: 620px;
 }
 
