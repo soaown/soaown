@@ -65,6 +65,8 @@
       }
 
       popup.style.display = "flex";
+      const input = document.getElementById("admin-password-input");
+      if (input) input.focus();
     }
 
     function closeAdminPopup() {
@@ -123,7 +125,8 @@
     <div class="password-box">
       <p>access log</p>
 
-      <input type="password" id="admin-password-input" placeholder="••••">
+      <input type="password" id="admin-password-input" placeholder="••••"
+        onkeydown="if(event.key==='Enter') submitAdminPassword()">
 
       <div class="password-buttons">
         <button onclick="closeAdminPopup()">CLOSE</button>
@@ -132,7 +135,7 @@
     </div>
   </div>
 
-  <div id="error-popup" style="display:none;">
+  <div id="error-popup" class="password-popup" style="display:none;">
     <div class="password-box">
       <p class="error-text">
         <img src="/soaown/assets/sleep.png" class="sleepy-img">
