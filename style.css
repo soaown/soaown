@@ -1163,8 +1163,7 @@ main,
 .editor-box #content-input {
   border: none;
   background: transparent;
-  min-height: 420px;
-  max-height: 70vh;
+  max-height: 50vh;
   overflow-y: auto;
   padding: 3.5rem 1rem 1rem;
 }
