@@ -1176,7 +1176,7 @@ main,
   font-family: inherit;
   font-weight: 700;
   color: black;
-  padding: 0.15rem 4px;
+  padding: 0.15px 4px;
   border-radius: 800px;
   font-size: 0.9rem;
   display: inline-block;
@@ -1184,6 +1184,7 @@ main,
   margin-top: 1rem;
   transition: all 0.3s ease;
   letter-spacing: 0.02em;
+  box-sizing: border-box;
 }
 
 /* hover */
@@ -1191,4 +1192,19 @@ main,
   background: #b7cf4f;
   border-color: #b7cf4f;
   color: #fff;
+}
+
+/* ===== 관리자 모드 아닐 때 수정삭제 숨김 ===== */
+.post-actions {
+  display: none;
+}
+
+/* ===== 관리자 모드에서만 보이기 ===== */
+body.admin-mode .post-actions {
+  display: flex;
+}
+
+/* ===== 관리자 모드 로그인시 admin 색깔 ===== */
+body.admin-mode .admin-btn {
+  background: #b7cf4f;
 }

@@ -870,3 +870,20 @@ document.addEventListener("click", function (e) {
   popup.style.top =
     rect.bottom + window.scrollY + 8 + "px";
 });
+
+// ===== 관리자 모드 =====
+function isAdminMode() {
+  return localStorage.getItem("adminMode") === "true";
+}
+
+function applyAdminMode() {
+  document.body.classList.toggle(
+    "admin-mode",
+    isAdminMode()
+  );
+}
+
+document.addEventListener(
+  "DOMContentLoaded",
+  applyAdminMode
+);

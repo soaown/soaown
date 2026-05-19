@@ -53,10 +53,7 @@
     }
 
     function applyAdminMode() {
-      document.body.classList.toggle(
-        "admin-mode",
-        isAdminMode()
-      );
+      document.body.classList.toggle("admin-mode", isAdminMode());
     }
 
     function openAdminPopup() {
@@ -68,8 +65,7 @@
     }
 
     function submitAdminPassword() {
-      const password =
-        document.getElementById("admin-password-input").value;
+      const password = document.getElementById("admin-password-input").value;
 
       if (password === ADMIN_PASSWORD) {
         localStorage.setItem("adminMode", "true");
@@ -88,10 +84,7 @@
       document.getElementById("error-popup").style.display = "none";
     }
 
-    document.addEventListener(
-      "DOMContentLoaded",
-      applyAdminMode
-    );
+    document.addEventListener("DOMContentLoaded", applyAdminMode);
   </script>
 
   <button class="fab-top">⌃</button>
