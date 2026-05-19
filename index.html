@@ -44,6 +44,56 @@
       });
   </script>
 
+  <button class="admin-btn" onclick="openAdminPopup()">ADMIN</button>
+  <script>
+    const ADMIN_PASSWORD = "0310";
+
+    function isAdminMode() {
+      return localStorage.getItem("adminMode") === "true";
+    }
+
+    function applyAdminMode() {
+      document.body.classList.toggle(
+        "admin-mode",
+        isAdminMode()
+      );
+    }
+
+    function openAdminPopup() {
+      document.getElementById("admin-popup").style.display = "flex";
+    }
+
+    function closeAdminPopup() {
+      document.getElementById("admin-popup").style.display = "none";
+    }
+
+    function submitAdminPassword() {
+      const password =
+        document.getElementById("admin-password-input").value;
+
+      if (password === ADMIN_PASSWORD) {
+        localStorage.setItem("adminMode", "true");
+        applyAdminMode();
+        closeAdminPopup();
+      } else {
+        openErrorPopup();
+      }
+    }
+
+    function openErrorPopup() {
+      document.getElementById("error-popup").style.display = "flex";
+    }
+
+    function closeErrorPopup() {
+      document.getElementById("error-popup").style.display = "none";
+    }
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      applyAdminMode
+    );
+  </script>
+
   <button class="fab-top">⌃</button>
   <script>
     document.querySelector(".fab-top").addEventListener("click", () => {
@@ -53,8 +103,31 @@
       });
     });
   </script>
+
   <div class="floating-text">
     ©Collected since 2025-2026 Seoul by soaown
+  </div>
+
+  <div id="admin-popup" class="password-popup" style="display:none;">
+    <div class="password-box">
+      <p>password</p>
+
+      <input type="password" id="admin-password-input" placeholder="••••">
+
+      <div class="password-buttons">
+        <button onclick="closeAdminPopup()">CLOSE</button>
+        <button onclick="submitAdminPassword()">ENTER</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="error-popup" style="display:none;">
+    <div class="password-box">
+      <img src="assets/sleep.png" class="sleepy-img">
+      <div class="password-buttons">
+        <button onclick="closeErrorPopup()">OK</button>
+      </div>
+    </div>
   </div>
 
 </body>
