@@ -816,3 +816,45 @@ document.addEventListener("DOMContentLoaded", function () {
     location.href = "index.html";
   }
 });
+
+function guardAddForm() {
+  if (!isAdminMode()) {
+    openAdminPopup();
+    return;
+  }
+
+  showAddForm();
+}
+
+function openAdminPopup() {
+  const popup = document.getElementById("admin-popup");
+
+  if (!popup) {
+    alert("ADMIN");
+    return;
+  }
+
+  popup.style.display = "flex";
+
+  const input = document.getElementById("admin-password-input");
+  if (input) input.focus();
+}
+
+function closeAdminPopup() {
+  const popup = document.getElementById("admin-popup");
+  if (popup) popup.style.display = "none";
+}
+
+function submitAdminPassword() {
+  const input = document.getElementById("admin-password-input");
+  const password = input ? input.value : "";
+
+  if (password === "0310") {
+    localStorage.setItem("adminMode", "true");
+    applyAdminMode();
+    closeAdminPopup();
+  } else {
+    const error = document.getElementById("error-popup");
+    if (error) error.style.display = "flex";
+  }
+}

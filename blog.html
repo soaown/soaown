@@ -32,7 +32,7 @@
       <span class="fake-search">( scan )</span>
       <input type="text" id="search-input" class="search-input"
         placeholder="search search search search search search search search............" oninput="handleSearch(event)">
-      <button id="add-btn" class="add-btn" onclick="openPasswordPopup()">( edit )</button>
+      <button id="add-btn" class="add-btn" onclick="guardAddForm()">( edit )</button>
     </div>
 
     <div class="add-section">
@@ -87,66 +87,29 @@
     ©Collected since 2025-2026 Seoul by soaown
   </div>
 
-  <div id="password-popup" class="password-popup" style="display:none;">
+  <div id="admin-popup" class="password-popup" style="display:none;">
     <div class="password-box">
       <p>access log</p>
 
-      <input type="password" id="password-input" placeholder="••••">
+      <input type="password" id="admin-password-input" placeholder="••••"
+        onkeydown="if(event.key==='Enter') submitAdminPassword()">
 
       <div class="password-buttons">
-        <button onclick="closePasswordPopup()">Cancel</button>
-        <button onclick="submitPassword()">enter</button>
+        <button onclick="closeAdminPopup()">CLOSE</button>
+        <button onclick="submitAdminPassword()">ENTER</button>
       </div>
     </div>
   </div>
 
-  <div id="error-popup" class="password-popup error" style="display:none;">
+  <div id="error-popup" class="password-popup" style="display:none;">
     <div class="password-box">
-      <p class="error-text">
-        <img src="/soaown/assets/sleepy.png" class="sleepy-img">
-      </p>
+      <img src="/soaown/assets/sleep.png" class="sleepy-img">
 
       <div class="password-buttons">
         <button onclick="closeErrorPopup()">OK</button>
       </div>
     </div>
   </div>
-
-  <script>
-    function openPasswordPopup() {
-      const popup = document.getElementById("password-popup");
-      popup.style.display = "flex";
-      popup.classList.add("active");
-    }
-
-    function closePasswordPopup() {
-      const popup = document.getElementById("password-popup");
-      popup.style.display = "none";
-      popup.classList.remove("active");
-    }
-
-    function submitPassword() {
-      const password = document.getElementById("password-input").value;
-
-      if (password === "0310") {
-        closePasswordPopup();
-        showAddForm();
-      } else {
-        openErrorPopup();
-      }
-    }
-    function openErrorPopup() {
-      const popup = document.getElementById("error-popup");
-      popup.style.display = "flex";
-      popup.classList.add("active");
-    }
-
-    function closeErrorPopup() {
-      const popup = document.getElementById("error-popup");
-      popup.style.display = "none";
-      popup.classList.remove("active");
-    }
-  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="script.js"></script>
