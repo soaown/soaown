@@ -807,7 +807,7 @@ document.addEventListener(
 function guardKnowledge(event) {
   if (!isAdminMode()) {
     event.preventDefault();
-    alert("ADMIN");
+    openAdminPopup();
   }
 }
 
