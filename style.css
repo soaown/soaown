@@ -537,7 +537,6 @@ main {
   width: 90px;
   opacity: 0.45;
   font-size: 0.8rem;
-  flex-shrink: 0;
 }
 
 .post-item p {
@@ -1214,36 +1213,92 @@ body.admin-mode .admin-btn {
 
 @media (max-width: 600px) {
 
-  .post-meta {
-    width: 100%;
-    max-width: 100%;
-    padding: 0.5rem 1rem;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
-
-  .post-item {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .post-item p,
-  .post-meta a {
-    min-width: 0;
-    max-width: 100%;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    white-space: normal;
-  }
-
-}
-
-@media (max-width: 600px) {
-
   .post-title {
     width: auto;
     max-width: calc(100vw - 3rem);
     align-self: flex-start;
   }
 
+  .post-header .meta-grid span {
+    padding-left: 0.5rem;
+  }
+
+  .post-header .meta-grid span,
+  .post-header .meta-grid p,
+  .post-header .meta-grid a {
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+
+}
+
+.post-header .meta-grid {
+  width: 100%;
+  max-width: 700px;
+  box-sizing: border-box;
+}
+
+.post-header .meta-grid label {
+  width: 100%;
+  display: flex;
+  min-width: 0;
+}
+
+.post-header .meta-grid span {
+  flex: 0 0 80px;
+}
+
+.post-header .meta-grid p,
+.post-header .meta-grid a {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
+  display: block;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  white-space: normal;
+}
+
+@media (max-width: 600px) {
+  .post-header .meta-grid {
+    max-width: 100%;
+    padding: 0.7rem 1.4rem;
+  }
+}
+
+.list-page .item-list li {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.list-page .item-title {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.list-page .item-title a {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  white-space: normal;
+}
+
+.item-list li,
+.item-title,
+.item-title a {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.item-title a {
+  display: block;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  white-space: normal;
 }
