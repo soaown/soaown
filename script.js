@@ -26,7 +26,7 @@ async function getItems(category) {
     .from("posts")
     .select("*")
     .eq("category", category)
-    .order("id", { ascending: false });
+    .order("date", { ascending: false });
 
   if (error) {
     console.error(error);
