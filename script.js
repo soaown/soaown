@@ -380,7 +380,10 @@ async function loadEditPost(id) {
   showAddForm();
 
   document.getElementById('title-input').value = post.title || '';
-  document.getElementById('date-input').value = '';
+  document.getElementById('date-input').value =
+    post.date
+      ? new Date(post.date).toISOString().split('T')[0]
+      : '';
   document.getElementById('category-input').value = post.subcategory || '';
   document.getElementById('link-input').value = post.link || '';
   document.getElementById('author-input').value = post.author || '';
@@ -858,3 +861,96 @@ function submitAdminPassword() {
     if (error) error.style.display = "flex";
   }
 }
+
+// ===== 카테고리 자동완성 =====
+function setupCategoryAutocomplete() {
+
+  const input =
+    document.getElementById(
+      'category-input'
+    );
+
+  const list =
+    document.getElementById(
+      'category-suggestions'
+    );
+
+  if (!input || !list) return;
+
+  // 저장된 카테고리 가져오기
+  let categories =
+    JSON.parse(
+      localStorage.getItem(
+        'savedCategories'
+      )
+    ) || [];
+
+  // 기본 카테고리
+  const defaults = [
+    '소설',
+    '시',
+    'unknown',
+    'Excerpts'
+  ];
+
+  categories = [
+    ...new Set([
+      ...defaults,
+      ...categories
+    ])
+  ];
+
+  // 추천 목록 렌더링
+  function renderList() {
+
+    list.innerHTML = '';
+
+    categories.forEach(cat => {
+
+      const option =
+        document.createElement(
+          'option'
+        );
+
+      option.value = cat;
+
+      list.appendChild(option);
+    });
+  }
+
+  renderList();
+
+  // 새 카테고리 저장
+  input.addEventListener(
+    'change',
+    () => {
+
+      const value =
+        input.value.trim();
+
+      if (!value) return;
+
+      if (
+        !categories.includes(value)
+      ) {
+
+        categories.push(value);
+
+        localStorage.setItem(
+          'savedCategories',
+          JSON.stringify(
+            categories
+          )
+        );
+
+        renderList();
+      }
+    }
+  );
+}
+
+// 페이지 열릴 때 실행
+document.addEventListener(
+  'DOMContentLoaded',
+  setupCategoryAutocomplete
+);
