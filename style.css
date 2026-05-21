@@ -1053,6 +1053,7 @@ main,
   padding: 0.1rem 1rem;
   font-family: inherit;
   font-size: 0.7rem;
+  font-weight: 600;
   cursor: pointer;
   border: none;
   pointer-events: auto;
@@ -1323,4 +1324,52 @@ body.admin-mode .admin-btn {
   overflow-wrap: anywhere;
   word-break: break-all;
   white-space: normal;
+}
+
+/* ===== 글씨 색상 버튼 ===== */
+.text-red {
+  color: #ff0000 !important;
+}
+
+.text-white {
+  color: #ffffff !important;
+}
+
+.text-blue {
+  color: #245bdb !important;
+}
+
+.text-black {
+  color: #000000 !important;
+}
+
+/* ===== 하이라이트 버튼 ===== */
+.highlight-green {
+  background: #D3F8B6 !important;
+  color: #4f5a38 !important;
+}
+
+.highlight-pink {
+  background: #FBDBFF !important;
+  color: #6f506f !important;
+}
+
+.highlight-blue {
+  background: #a0ccf6 !important;
+  color: #294967 !important;
+}
+
+.highlight-white {
+  background: #ffffff !important;
+  color: #555 !important;
+}
+
+.highlight-orange {
+  background: #fff200 !important;
+  color: #000000 !important;
+}
+
+.highlight-black {
+  background: #000000 !important;
+  color: #ffffff !important;
 }

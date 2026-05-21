@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="/soaown/assets/blue.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/soaown/assets/blue.png">
 </head>
 
 <body data-category="BLOG">
@@ -50,16 +52,16 @@
           <div class="editor-toolbar">
             <button type="button" onclick="formatText('bold')">B</button>
             <button type="button" onclick="formatText('justifyCenter')">=</button>
-            <button type="button" onclick="setTextColor('#ff0000')">R</button>
-            <button type="button" onclick="setTextColor('#ffffff')">W</button>
-            <button type="button" onclick="setTextColor('#245bdb')">B</button>
-            <button type="button" onclick="setTextColor('#000000')">0</button>
-            <button type="button" onclick="setHighlight('#D3F8B6')">초록</button>
-            <button type="button" onclick="setHighlight('#FBDBFF')">핑크</button>
-            <button type="button" onclick="setHighlight('#a0ccf6')">파랑</button>
-            <button type="button" onclick="setHighlight('#ffffff')">흰색</button>
-            <button type="button" onclick="setHighlight('#FF8f05')">주황</button>
-            <button type="button" onclick="setHighlight('#000000')">검정</button>
+            <button type="button" class="text-red" onclick="setTextColor('#ff0000')">R</button>
+            <button type="button" class="text-white" onclick="setTextColor('#ffffff')">W</button>
+            <button type="button" class="text-blue" onclick="setTextColor('#245bdb')">B</button>
+            <button type="button" class="text-black" onclick="setTextColor('#000000')">0</button>
+            <button type="button" class="highlight-green" onclick="setHighlight('#D3F8B6')">HG</button>
+            <button type="button" class="highlight-pink" onclick="setHighlight('#FBDBFF')">HP</button>
+            <button type="button" class="highlight-blue" onclick="setHighlight('#a0ccf6')">HB</button>
+            <button type="button" class="highlight-white" onclick="setHighlight('#ffffff')">HW</button>
+            <button type="button" class="highlight-orange" onclick="setHighlight('#FFF200')">HY</button>
+            <button type="button" class="highlight-black" onclick="setHighlight('#000000')">HK</button>
             <button type="button" onclick="removeHighlight()">reset</button>
             <button type="button" onclick="insertFootnote()">[^]</button>
             <button type="button" onclick="insertImage()">PHOTO</button>
