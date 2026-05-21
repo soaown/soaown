@@ -502,6 +502,12 @@ main {
   overflow-wrap: break-word;
 }
 
+@media (max-width: 600px) {
+  .post-header {
+    padding: 0.01rem;
+  }
+}
+
 .post-title {
   font-size: clamp(2.5rem, 2.5vw, 0.5rem);
   font-weight: 700;
