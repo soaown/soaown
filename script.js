@@ -26,7 +26,7 @@ async function getItems(category) {
     .from("posts")
     .select("*")
     .eq("category", category)
-    .order("date", { ascending: false });
+    .order("id", { ascending: false });
 
   if (error) {
     console.error(error);
@@ -68,6 +68,10 @@ function clearSearch() {
 async function renderList() {
   const category = document.body.dataset.category;
   let items = await getItems(category);
+
+  items.sort((a, b) => {
+    return new Date(b.date) - new Date(a.date);
+  });
 
   // 검색 필터링 (제목, 카테고리, 내용 모두 검색)
   if (searchQuery) {
