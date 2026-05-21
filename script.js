@@ -861,3 +861,22 @@ function submitAdminPassword() {
     if (error) error.style.display = "flex";
   }
 }
+
+// 하이라이트 제거
+function removeHighlight() {
+
+  const editor =
+    document.getElementById(
+      "content-input"
+    );
+
+  if (!editor) return;
+
+  editor.focus();
+
+  document.execCommand(
+    "hiliteColor",
+    false,
+    "transparent"
+  );
+}
