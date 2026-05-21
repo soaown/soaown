@@ -1319,6 +1319,13 @@ body.admin-mode .admin-btn {
   min-width: 0;
 }
 
+@media (max-width: 600px) {
+  .item-title {
+    width: 100%;
+    font-weight: 700;
+  }
+}
+
 .item-title a {
   display: block;
   overflow-wrap: anywhere;
