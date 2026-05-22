@@ -1,3 +1,12 @@
+let coverUrl = "";
+
+function selectCoverImage() {
+  const input = document.getElementById("cover-input");
+  if (!input) return;
+
+  input.click();
+}
+
 // ===== 서버연결 =====
 const SUPABASE_URL = "https://pwbupzluwwyecsabdtcc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_ZRjzTSDAc70_elo91hs9zg_ZvdTyn5v";
@@ -138,6 +147,14 @@ function hideAddForm() {
   document.getElementById('add-btn').style.display = 'inline-block';
   document.getElementById('add-form').reset();
 
+  // ===== 표지 이미지 상태 초기화 =====
+  coverUrl = "";
+  window.currentEditingId = null;
+  const titleBanner = document.querySelector(".title-banner-preview");
+  if (titleBanner) {
+    titleBanner.style.removeProperty("--cover-url");
+  }
+
   // 다시 보이도록 복원
   const pageTitle = document.querySelector('.page-title');
   const searchSection = document.querySelector('.search-section');
@@ -173,7 +190,8 @@ async function handleSubmit(event) {
         author,
         publisher,
         details,
-        content
+        content,
+        cover_url: coverUrl
       })
       .eq("id", window.currentEditingId);
 
@@ -194,7 +212,8 @@ async function handleSubmit(event) {
       publisher,
       details,
       link,
-      content
+      content,
+      cover_url: coverUrl
     });
 
   }
@@ -275,6 +294,17 @@ async function renderPost() {
 
   document.title = `${post.title} | SOAOWN`;
   titleEl.textContent = post.title;
+
+  // ===== 책 표지 배경 =====
+  const postHeader =
+    document.querySelector(".post-header");
+
+  if (postHeader && post.cover_url) {
+    postHeader.style.setProperty(
+      "--cover-url",
+      `url("${post.cover_url}")`
+    );
+  }
 
   let metaHTML = '';
 
@@ -397,6 +427,15 @@ async function loadEditPost(id) {
   document.querySelectorAll(".footnote-ref").forEach(ref => {
     ref.removeAttribute("title");
   });
+
+  // ===== 표지 이미지 복원 =====
+  coverUrl = post.cover_url || "";
+
+  const titleBanner = document.querySelector(".title-banner-preview");
+  if (titleBanner && coverUrl) {
+    titleBanner.style.setProperty("--cover-url", `url("${coverUrl}")`);
+  }
+
   document.querySelectorAll('.add-form textarea').forEach(autoResizeTextarea);
 }
 // ===== textarea 자동 높이 조절 =====
@@ -501,8 +540,21 @@ function formatText(command) {
   ) {
 
     if (command === "justifyCenter") {
-      selectedImage.style.display = "block";
-      selectedImage.style.margin = "1rem auto";
+      // 이미지 가운데 정렬 토글
+      const m = selectedImage.style.margin;
+      const isCentered =
+        m === "1rem auto" ||
+        m === "1rem auto 1rem auto" ||
+        m.indexOf("auto") !== -1;
+
+      if (isCentered) {
+        selectedImage.style.margin = "";
+        selectedImage.style.display = "";
+      } else {
+        selectedImage.style.display = "block";
+        selectedImage.style.margin = "1rem auto";
+      }
+      return;
     }
 
     if (command === "justifyLeft") {
@@ -516,6 +568,20 @@ function formatText(command) {
     }
 
     return;
+  }
+
+  // 텍스트 가운데 정렬 토글 (이미 가운데면 해제)
+  if (command === "justifyCenter") {
+    let isCentered = false;
+    try {
+      isCentered = document.queryCommandState("justifyCenter");
+    } catch (e) {
+      isCentered = false;
+    }
+    if (isCentered) {
+      document.execCommand("justifyLeft", false, null);
+      return;
+    }
   }
 
   document.execCommand(
@@ -656,6 +722,111 @@ function setHighlight(color) {
     color
   );
 }
+
+// ===== 글씨색 / 하이라이트 드롭다운 =====
+function toggleColorDropdown(triggerEl) {
+  const dropdown = triggerEl.closest(".color-dropdown");
+  if (!dropdown) return;
+
+  const wasOpen = dropdown.classList.contains("open");
+
+  // 다른 드롭다운은 모두 닫기
+  document
+    .querySelectorAll(".color-dropdown.open")
+    .forEach(d => d.classList.remove("open"));
+
+  if (!wasOpen) {
+    dropdown.classList.add("open");
+  }
+}
+
+function pickTextColor(swatchEl, color) {
+  const dropdown = swatchEl.closest(".color-dropdown");
+  if (dropdown) {
+    const bar = dropdown.querySelector(".trigger-bar");
+    if (bar) bar.style.background = color;
+    dropdown.classList.remove("open");
+  }
+  setTextColor(color);
+}
+
+function pickHighlight(swatchEl, color) {
+  const dropdown = swatchEl.closest(".color-dropdown");
+  const bar = dropdown ? dropdown.querySelector(".trigger-bar") : null;
+
+  const editor = document.getElementById("content-input");
+  if (!editor) {
+    if (dropdown) dropdown.classList.remove("open");
+    return;
+  }
+  editor.focus();
+
+  // 현재 selection의 하이라이트 색상 확인
+  let current = "";
+  try {
+    current =
+      document.queryCommandValue("backColor") ||
+      document.queryCommandValue("hiliteColor") ||
+      "";
+  } catch (e) {
+    current = "";
+  }
+
+  if (isSameColor(current, color)) {
+    // 같은 색이면 해제 (토글)
+    document.execCommand("hiliteColor", false, "transparent");
+    if (bar) bar.style.background = "transparent";
+  } else {
+    document.execCommand("hiliteColor", false, color);
+    if (bar) bar.style.background = color;
+  }
+
+  if (dropdown) dropdown.classList.remove("open");
+}
+
+// 색상 비교용 헬퍼
+function isSameColor(a, b) {
+  const na = normalizeColor(a);
+  const nb = normalizeColor(b);
+  if (!na || !nb) return false;
+  return na === nb;
+}
+
+function normalizeColor(color) {
+  if (!color) return "";
+  color = String(color).trim().toLowerCase();
+  if (
+    !color ||
+    color === "transparent" ||
+    color === "rgba(0, 0, 0, 0)"
+  ) {
+    return "";
+  }
+  if (color.startsWith("#")) {
+    if (color.length === 4) {
+      return "#" + color[1] + color[1] + color[2] + color[2] + color[3] + color[3];
+    }
+    return color;
+  }
+  if (color.startsWith("rgb")) {
+    const m = color.match(/\d+/g);
+    if (m && m.length >= 3) {
+      const hex = n =>
+        parseInt(n, 10).toString(16).padStart(2, "0");
+      return "#" + hex(m[0]) + hex(m[1]) + hex(m[2]);
+    }
+  }
+  return color;
+}
+
+// 바깥 영역 클릭 시 드롭다운 닫기
+document.addEventListener("click", function (e) {
+  if (!e.target.closest(".color-dropdown")) {
+    document
+      .querySelectorAll(".color-dropdown.open")
+      .forEach(d => d.classList.remove("open"));
+  }
+});
 
 // ===== 각주 기능 =====
 let footnoteCount = 1;
@@ -884,3 +1055,43 @@ function removeHighlight() {
     "transparent"
   );
 }
+
+document
+  .getElementById("cover-input")
+  ?.addEventListener("change", async function () {
+    const file = this.files[0];
+
+    if (!file) return;
+
+    const fileName = `cover-${Date.now()}-${file.name}`;
+
+    const { data, error } = await db.storage
+      .from("post-images")
+      .upload(fileName, file);
+
+    if (error) {
+      console.error("표지 업로드 실패:", error);
+      return;
+    }
+
+    const { data: publicData } = db.storage
+      .from("post-images")
+      .getPublicUrl(fileName);
+
+    coverUrl = publicData.publicUrl;
+
+    // ===== 제목 배너 미리보기 =====
+    const titleBanner =
+      document.querySelector(
+        ".title-banner-preview"
+      );
+
+    if (titleBanner) {
+      titleBanner.style.setProperty(
+        "--cover-url",
+        `url("${coverUrl}")`
+      );
+    }
+
+    alert("cover image added");
+  });
