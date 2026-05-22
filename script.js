@@ -1,1097 +1,846 @@
-let coverUrl = "";
+/**
+ * SOAOWN - blog/book/knowledge/post 페이지 공통 스크립트
+ *
+ * 구조 (위에서 아래로):
+ *   1. 설정 / 상수
+ *   2. Supabase 클라이언트
+ *   3. 모듈 내부 상태
+ *   4. 유틸 (escapeHtml, formatDate, 색상)
+ *   5. DB (getItems, saveItem, updateItem, deleteItem, uploadImage)
+ *   6. 검색
+ *   7. 리스트 렌더링
+ *   8. add-form 표시/숨김 + 표지 이미지
+ *   9. 저장 / 수정 / 삭제
+ *  10. 상세 페이지 렌더링 + 수정 모드 로드
+ *  11. 에디터 툴바 (서식, 색상, 하이라이트, 드롭다운)
+ *  12. 에디터 이미지 (삽입, 선택, 리사이즈)
+ *  13. 각주
+ *  14. textarea / meta input 자동 크기
+ *  15. 어드민 진입 가드 (admin.js와 연동)
+ *  16. 부트스트랩 (단일 DOMContentLoaded)
+ *  17. 인라인 onclick 노출
+ */
+(() => {
+  'use strict';
 
-function selectCoverImage() {
-  const input = document.getElementById("cover-input");
-  if (!input) return;
+  // ===== 1. 설정 / 상수 =====
+  const SUPABASE_URL = "https://pwbupzluwwyecsabdtcc.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_ZRjzTSDAc70_elo91hs9zg_ZvdTyn5v";
+  const STORAGE_BUCKET = "post-images";
+  const POSTS_TABLE = "posts";
 
-  input.click();
-}
+  const MONTH_NAMES = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
 
-// ===== 서버연결 =====
-const SUPABASE_URL = "https://pwbupzluwwyecsabdtcc.supabase.co";
-const SUPABASE_KEY = "sb_publishable_ZRjzTSDAc70_elo91hs9zg_ZvdTyn5v";
+  const IMAGE_BOX_DEFAULT_WIDTH = 300; // px
+  const META_INPUT_MIN_WIDTH = 12;     // ch
+  const META_INPUT_PADDING = 2;        // ch
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-// ===== 공통 =====
-const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-let searchQuery = '';
+  // ===== 2. Supabase 클라이언트 =====
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function formatDate(isoDate) {
-  const d = isoDate ? new Date(isoDate) : new Date();
-  return `${monthNames[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-}
+  // ===== 3. 모듈 내부 상태 =====
+  let coverUrl = "";
+  let searchQuery = "";
+  let footnoteCount = 1;
+  let currentEditingId = null;
 
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-async function getItems(category) {
-  const { data, error } = await db
-    .from("posts")
-    .select("*")
-    .eq("category", category)
-    .order("id", { ascending: false });
-
-  if (error) {
-    console.error(error);
-    return [];
+  // ===== 4. 유틸 =====
+  function getEditor() {
+    return document.getElementById("content-input");
   }
 
-  return data;
-}
-
-async function saveItem(item) {
-  const { error } = await db
-    .from("posts")
-    .insert([item]);
-
-  if (error) {
-    console.error(error);
-  }
-}
-
-
-
-
-// ===== 검색 =====
-function handleSearch(event) {
-  searchQuery = event.target.value.toLowerCase();
-  renderList();
-}
-
-function clearSearch() {
-  searchQuery = '';
-  const input = document.getElementById('search-input');
-  if (input) input.value = '';
-}
-
-
-
-
-// ===== 리스트 페이지 =====
-async function renderList() {
-  const category = document.body.dataset.category;
-  let items = await getItems(category);
-
-  items.sort((a, b) => {
-    return new Date(b.date) - new Date(a.date);
-  });
-
-  // 검색 필터링 (제목, 카테고리, 내용 모두 검색)
-  if (searchQuery) {
-    items = items.filter(item => {
-      const haystack = [
-        item.title || '',
-        item.content || '',
-        item.category || ''
-      ].join(' ').toLowerCase();
-      return haystack.includes(searchQuery);
-    });
+  function formatDate(isoDate) {
+    const d = isoDate ? new Date(isoDate) : new Date();
+    return `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
   }
 
-  const list = document.querySelector('.item-list');
-  if (!list) return;
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
 
-  if (items.length === 0) {
-    if (searchQuery) {
-      list.innerHTML = `<li class="empty-state">검색 결과가 없습니다.</li>`;
-    } else {
-      list.innerHTML = '<li class="empty-state">아직 작성된 글이 없습니다.</li>';
+  function normalizeColor(color) {
+    if (!color) return "";
+    color = String(color).trim().toLowerCase();
+    if (!color || color === "transparent" || color === "rgba(0, 0, 0, 0)") {
+      return "";
     }
-    return;
+    if (color.startsWith("#")) {
+      if (color.length === 4) {
+        return "#" + color[1] + color[1] + color[2] + color[2] + color[3] + color[3];
+      }
+      return color;
+    }
+    if (color.startsWith("rgb")) {
+      const m = color.match(/\d+/g);
+      if (m && m.length >= 3) {
+        const hex = n => parseInt(n, 10).toString(16).padStart(2, "0");
+        return "#" + hex(m[0]) + hex(m[1]) + hex(m[2]);
+      }
+    }
+    return color;
   }
 
-  list.innerHTML = items.map(item => `
-    <li>
-      <h2 class="item-title">
-        <a href="post.html?category=${category}&id=${item.id}">${escapeHtml(item.title)}</a>
-      </h2>
-      <div class="item-meta">
-        <span>${escapeHtml(item.date)}</span>
-        ${item.subcategory ? `<span>· ${escapeHtml(item.subcategory)}</span>` : ''}
-      </div>
-    </li>
-  `).join('');
-}
-
-function showAddForm() {
-  const form = document.getElementById("add-form");
-  const addBtn = document.getElementById("add-btn");
-
-  if (!form) return;
-
-  form.style.display = "flex";
-  if (addBtn) addBtn.style.display = "none";
-
-  const pageTitle = document.querySelector(".page-title");
-  const searchSection = document.querySelector(".search-section");
-  const itemList = document.querySelector(".item-list");
-
-  if (pageTitle) pageTitle.style.display = "none";
-  if (searchSection) searchSection.style.display = "none";
-  if (itemList) itemList.style.display = "none";
-
-  const titleInput = document.getElementById("title-input");
-  if (titleInput) titleInput.focus();
-
-  window.scrollTo(0, 0);
-}
-
-function hideAddForm() {
-  document.getElementById('add-form').style.display = 'none';
-  document.getElementById('add-btn').style.display = 'inline-block';
-  document.getElementById('add-form').reset();
-
-  // ===== 표지 이미지 상태 초기화 =====
-  coverUrl = "";
-  window.currentEditingId = null;
-  const titleBanner = document.querySelector(".title-banner-preview");
-  if (titleBanner) {
-    titleBanner.style.removeProperty("--cover-url");
+  function isSameColor(a, b) {
+    const na = normalizeColor(a);
+    const nb = normalizeColor(b);
+    if (!na || !nb) return false;
+    return na === nb;
   }
 
-  // 다시 보이도록 복원
-  const pageTitle = document.querySelector('.page-title');
-  const searchSection = document.querySelector('.search-section');
-  const itemList = document.querySelector('.item-list');
-  if (pageTitle) pageTitle.style.display = '';
-  if (searchSection) searchSection.style.display = '';
-  if (itemList) itemList.style.display = '';
-}
-
-async function handleSubmit(event) {
-  event.preventDefault();
-  const category = document.body.dataset.category;
-  const title = document.getElementById('title-input').value.trim();
-  const dateRaw = document.getElementById('date-input').value;
-  const subCategory = document.getElementById('category-input').value.trim();
-  const content = document.getElementById('content-input').innerHTML.trim();
-  const link = document.getElementById('link-input').value.trim();
-  const author = document.getElementById('author-input').value.trim();
-  const publisher = document.getElementById('publisher-input').value.trim();
-  const details = document.getElementById('details-input').value.trim();
-
-  if (!title || !content) return;
-
-  if (window.currentEditingId) {
-
-    const { error } = await db
-      .from("posts")
-      .update({
-        title,
-        date: formatDate(dateRaw),
-        subcategory: subCategory,
-        link,
-        author,
-        publisher,
-        details,
-        content,
-        cover_url: coverUrl
-      })
-      .eq("id", window.currentEditingId);
+  // ===== 5. DB =====
+  async function getItems(category) {
+    const { data, error } = await db
+      .from(POSTS_TABLE)
+      .select("*")
+      .eq("category", category)
+      .order("id", { ascending: false });
 
     if (error) {
       console.error(error);
+      return [];
+    }
+    return data;
+  }
+
+  async function saveItem(item) {
+    const { error } = await db.from(POSTS_TABLE).insert([item]);
+    if (error) console.error(error);
+  }
+
+  async function updateItem(id, item) {
+    const { error } = await db.from(POSTS_TABLE).update(item).eq("id", id);
+    if (error) {
+      console.error(error);
+      return false;
+    }
+    return true;
+  }
+
+  async function deleteItem(id) {
+    const { error } = await db.from(POSTS_TABLE).delete().eq("id", id);
+    if (error) {
+      console.error(error);
+      return false;
+    }
+    return true;
+  }
+
+  async function uploadImage(file, prefix) {
+    const fileExt = file.name.split(".").pop();
+    const fileName = prefix
+      ? `${prefix}-${Date.now()}-${file.name}`
+      : `${Date.now()}-${Math.random()}.${fileExt}`;
+    const filePath = prefix ? fileName : `posts/${fileName}`;
+
+    const { error } = await db.storage.from(STORAGE_BUCKET).upload(filePath, file);
+    if (error) {
+      console.error(error);
+      return null;
+    }
+
+    const { data } = db.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+    return data.publicUrl;
+  }
+
+  // ===== 6. 검색 =====
+  function handleSearch(event) {
+    searchQuery = event.target.value.toLowerCase();
+    renderList();
+  }
+
+  // ===== 7. 리스트 렌더링 =====
+  async function renderList() {
+    const category = document.body.dataset.category;
+    let items = await getItems(category);
+
+    items.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    if (searchQuery) {
+      items = items.filter(item => {
+        const haystack = [
+          item.title || '',
+          item.content || '',
+          item.category || ''
+        ].join(' ').toLowerCase();
+        return haystack.includes(searchQuery);
+      });
+    }
+
+    const list = document.querySelector('.item-list');
+    if (!list) return;
+
+    if (items.length === 0) {
+      list.innerHTML = searchQuery
+        ? '<li class="empty-state">검색 결과가 없습니다.</li>'
+        : '<li class="empty-state">아직 작성된 글이 없습니다.</li>';
       return;
     }
 
-  } else {
+    list.innerHTML = items.map(item => `
+      <li>
+        <h2 class="item-title">
+          <a href="post.html?category=${category}&id=${item.id}">${escapeHtml(item.title)}</a>
+        </h2>
+        <div class="item-meta">
+          <span>${escapeHtml(item.date)}</span>
+          ${item.subcategory ? `<span>· ${escapeHtml(item.subcategory)}</span>` : ''}
+        </div>
+      </li>
+    `).join('');
+  }
 
-    // 새 글 저장
-    await saveItem({
-      title,
-      date: formatDate(dateRaw),
-      category,
-      subcategory: subCategory,
-      author,
-      publisher,
-      details,
-      link,
-      content,
-      cover_url: coverUrl
+  // ===== 8. add-form 표시/숨김 + 표지 이미지 =====
+  function showAddForm() {
+    const form = document.getElementById("add-form");
+    if (!form) return;
+
+    form.style.display = "flex";
+    toggleListView(false);
+
+    const titleInput = document.getElementById("title-input");
+    if (titleInput) titleInput.focus();
+
+    window.scrollTo(0, 0);
+  }
+
+  function hideAddForm() {
+    const form = document.getElementById('add-form');
+    if (form) {
+      form.style.display = 'none';
+      form.reset();
+    }
+
+    // 표지 이미지 상태 초기화
+    coverUrl = "";
+    currentEditingId = null;
+    const titleBanner = document.querySelector(".title-banner-preview");
+    if (titleBanner) {
+      titleBanner.style.removeProperty("--cover-url");
+    }
+
+    toggleListView(true);
+  }
+
+  function toggleListView(visible) {
+    const display = visible ? '' : 'none';
+    const targets = ['.page-title', '.search-section', '.item-list'];
+    targets.forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) el.style.display = display;
     });
 
+    const addBtn = document.getElementById('add-btn');
+    if (addBtn) addBtn.style.display = visible ? 'inline-block' : 'none';
   }
 
-  window.currentEditingId = null;
-
-  hideAddForm();
-  await renderList();
-}
-
-// ===== 삭제랑 수정버튼 =====
-async function deletePost() {
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
-  const category = params.get('category');
-
-  if (!id || !category) {
-    alert("잘못된 접근입니다.");
-    return;
+  function selectCoverImage() {
+    const input = document.getElementById("cover-input");
+    if (input) input.click();
   }
 
-  if (!confirm("정말 삭제하시겠습니까?")) return;
+  async function handleCoverInputChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const { error } = await db
-    .from("posts")
-    .delete()
-    .eq("id", id);
+    const publicUrl = await uploadImage(file, "cover");
+    if (!publicUrl) {
+      console.error("표지 업로드 실패");
+      return;
+    }
 
-  if (error) {
-    console.error(error);
-    alert("삭제 중 오류가 발생했습니다.");
-    return;
+    coverUrl = publicUrl;
+
+    const titleBanner = document.querySelector(".title-banner-preview");
+    if (titleBanner) {
+      titleBanner.style.setProperty("--cover-url", `url("${coverUrl}")`);
+    }
+
+    alert("cover image added");
   }
 
-  window.location.href = `${category.toLowerCase()}.html`;
-}
-// ===== 삭제랑 수정버튼(여기가수정) =====
-function editPost() {
-  const params = new URLSearchParams(window.location.search);
-
-  const id = params.get('id');
-  const category = params.get('category');
-
-  if (!id || !category) {
-    alert("잘못된 접근입니다.");
-    return;
+  // ===== 9. 저장 / 수정 / 삭제 =====
+  function collectFormValues() {
+    const get = id => document.getElementById(id);
+    return {
+      title: get('title-input').value.trim(),
+      dateRaw: get('date-input').value,
+      subcategory: get('category-input').value.trim(),
+      content: get('content-input').innerHTML.trim(),
+      link: get('link-input').value.trim(),
+      author: get('author-input').value.trim(),
+      publisher: get('publisher-input').value.trim(),
+      details: get('details-input').value.trim(),
+    };
   }
 
-  window.location.href = `${category.toLowerCase()}.html?edit=${id}`;
-}
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const category = document.body.dataset.category;
+    const v = collectFormValues();
 
-// ===== 글 상세 페이지 =====
-async function renderPost() {
-  const params = new URLSearchParams(window.location.search);
-  const category = params.get('category') || 'BLOG';
-  const id = params.get('id');
+    if (!v.title || !v.content) return;
 
-  const titleEl = document.querySelector('.post-title');
-  const metaEl = document.querySelector('.meta-grid');
-  const contentEl = document.querySelector('.post-content');
+    const payload = {
+      title: v.title,
+      date: formatDate(v.dateRaw),
+      subcategory: v.subcategory,
+      link: v.link,
+      author: v.author,
+      publisher: v.publisher,
+      details: v.details,
+      content: v.content,
+      cover_url: coverUrl,
+    };
 
-  if (!id) {
-    titleEl.textContent = '글을 찾을 수 없습니다';
-    metaEl.textContent = '';
-    contentEl.innerHTML = '';
-    return;
-  }
+    if (currentEditingId) {
+      const ok = await updateItem(currentEditingId, payload);
+      if (!ok) return;
+    } else {
+      await saveItem({ ...payload, category });
+    }
 
-  const items = await getItems(category);
-  const post = items.find(item => String(item.id) === id);
-
-  if (!post) {
-    titleEl.textContent = '글을 찾을 수 없습니다';
-    metaEl.textContent = '';
-    contentEl.innerHTML = '';
-    return;
-  }
-
-  document.title = `${post.title} | SOAOWN`;
-  titleEl.textContent = post.title;
-
-  // ===== 책 표지 배경 =====
-  const postHeader =
-    document.querySelector(".post-header");
-
-  if (postHeader && post.cover_url) {
-    postHeader.style.setProperty(
-      "--cover-url",
-      `url("${post.cover_url}")`
-    );
-  }
-
-  let metaHTML = '';
-
-  if (post.date) {
-    metaHTML += `
-    <label>
-      <span>date:</span>
-      <p>${escapeHtml(post.date)}</p>
-    </label>
-  `;
-  }
-
-  if (post.subcategory) {
-    metaHTML += `
-    <label>
-      <span>category:</span>
-      <p>${escapeHtml(post.subcategory)}</p>
-    </label>
-  `;
-  }
-
-  if (post.link) {
-    metaHTML += `
-    <label>
-      <span>link:</span>
-      <a href="${escapeHtml(post.link)}" target="_blank" rel="noopener noreferrer">
-        ${escapeHtml(post.link)}
-      </a>
-    </label>
-  `;
-  }
-
-  if (post.author) {
-    metaHTML += `
-    <label>
-      <span>author:</span>
-      <p>${escapeHtml(post.author)}</p>
-    </label>
-  `;
-  }
-
-  if (post.publisher) {
-    metaHTML += `
-    <label>
-      <span>publisher:</span>
-      <p>${escapeHtml(post.publisher)}</p>
-    </label>
-  `;
-  }
-
-  if (post.details) {
-    metaHTML += `
-    <label>
-      <span>details:</span>
-      <p>${escapeHtml(post.details)}</p>
-    </label>
-  `;
-  }
-
-  metaEl.innerHTML = metaHTML;
-
-  contentEl.innerHTML = post.content || '';
-  contentEl.querySelectorAll(".footnote-ref").forEach(ref => {
-    ref.removeAttribute("title");
-  });
-
-  // 뒤로가기 링크 카테고리에 맞게 설정
-  const backLink = document.querySelector('.post-back a');
-  if (backLink) {
-    backLink.href = `${category.toLowerCase()}.html`;
-    backLink.textContent = `← ${category.charAt(0).toUpperCase() + category.slice(1)}로 돌아가기`;
-  }
-}
-
-// ===== 페이지 종류에 따라 실행 =====
-document.addEventListener('DOMContentLoaded', async () => {
-
-  const pageType = document.body.dataset.page;
-
-  if (pageType === 'post') {
-
-    await renderPost();
-
-  } else if (document.body.dataset.category) {
-
+    currentEditingId = null;
+    hideAddForm();
     await renderList();
+  }
 
+  async function deletePost() {
     const params = new URLSearchParams(window.location.search);
-    const editId = params.get('edit');
+    const id = params.get('id');
+    const category = params.get('category');
 
-    if (editId) {
-      await loadEditPost(editId);
+    if (!id || !category) {
+      alert("잘못된 접근입니다.");
+      return;
     }
-  }
-});
 
-async function loadEditPost(id) {
-  const category = document.body.dataset.category;
-  const items = await getItems(category);
+    if (!confirm("정말 삭제하시겠습니까?")) return;
 
-  const post = items.find(item => String(item.id) === id);
-
-  if (!post) return;
-
-  window.currentEditingId = id;
-
-  showAddForm();
-
-  document.getElementById('title-input').value = post.title || '';
-  document.getElementById('date-input').value =
-    post.date
-      ? new Date(post.date).toISOString().split('T')[0]
-      : '';
-  document.getElementById('category-input').value = post.subcategory || '';
-  document.getElementById('link-input').value = post.link || '';
-  document.getElementById('author-input').value = post.author || '';
-  document.getElementById('publisher-input').value = post.publisher || '';
-  document.getElementById('details-input').value = post.details || '';
-  document.getElementById('content-input').innerHTML = post.content || '';
-  document.querySelectorAll(".footnote-ref").forEach(ref => {
-    ref.removeAttribute("title");
-  });
-
-  // ===== 표지 이미지 복원 =====
-  coverUrl = post.cover_url || "";
-
-  const titleBanner = document.querySelector(".title-banner-preview");
-  if (titleBanner && coverUrl) {
-    titleBanner.style.setProperty("--cover-url", `url("${coverUrl}")`);
-  }
-
-  document.querySelectorAll('.add-form textarea').forEach(autoResizeTextarea);
-}
-// ===== textarea 자동 높이 조절 =====
-function autoResizeTextarea(el) {
-  el.style.height = 'auto';
-  el.style.height = el.scrollHeight + 'px';
-}
-
-document.querySelectorAll('.add-form textarea').forEach(ta => {
-  ta.addEventListener('input', () => autoResizeTextarea(ta));
-});
-
-// ===== 수정창 카테고리 박스 늘어남 =====
-function resizeMetaInput(input) {
-  input.style.width =
-    Math.max(input.value.length + 2, 12) + 'ch';
-}
-
-document
-  .querySelectorAll('.meta-grid input')
-  .forEach(input => {
-
-    resizeMetaInput(input);
-
-    input.addEventListener('input', () => {
-      resizeMetaInput(input);
-    });
-
-  });
-
-
-// ===== 제목 textarea 자동 높이 =====
-const titleInput = document.getElementById("title-input");
-
-if (titleInput) {
-
-  function autoResizeTitle() {
-    titleInput.style.height = "auto";
-    titleInput.style.height =
-      titleInput.scrollHeight + "px";
-  }
-
-  autoResizeTitle();
-
-  titleInput.addEventListener(
-    "input",
-    autoResizeTitle
-  );
-
-  titleInput.addEventListener(
-    "keydown",
-    (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-      }
+    const ok = await deleteItem(id);
+    if (!ok) {
+      alert("삭제 중 오류가 발생했습니다.");
+      return;
     }
-  );
-}
 
-// ===== 엔터누르면비번써밋 =====
+    window.location.href = `${category.toLowerCase()}.html`;
+  }
 
-document.addEventListener("DOMContentLoaded", () => {
+  function editPost() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const category = params.get('category');
 
-  const input =
-    document.getElementById("password-input");
+    if (!id || !category) {
+      alert("잘못된 접근입니다.");
+      return;
+    }
 
-  if (input) {
+    window.location.href = `${category.toLowerCase()}.html?edit=${id}`;
+  }
 
-    input.addEventListener("keydown", (e) => {
+  // ===== 10. 상세 페이지 렌더링 + 수정 모드 로드 =====
+  const POST_META_FIELDS = [
+    { key: 'date', label: 'date' },
+    { key: 'subcategory', label: 'category' },
+    { key: 'link', label: 'link', isLink: true },
+    { key: 'author', label: 'author' },
+    { key: 'publisher', label: 'publisher' },
+    { key: 'details', label: 'details' },
+  ];
 
-      if (e.key === "Enter") {
+  function renderPostMeta(post) {
+    return POST_META_FIELDS
+      .filter(f => post[f.key])
+      .map(f => {
+        const value = escapeHtml(post[f.key]);
+        const body = f.isLink
+          ? `<a href="${value}" target="_blank" rel="noopener noreferrer">${value}</a>`
+          : `<p>${value}</p>`;
+        return `<label><span>${f.label}:</span>${body}</label>`;
+      })
+      .join('');
+  }
 
-        e.preventDefault();
+  function setPostNotFound(titleEl, metaEl, contentEl) {
+    titleEl.textContent = '글을 찾을 수 없습니다';
+    metaEl.textContent = '';
+    contentEl.innerHTML = '';
+  }
 
-        submitPassword();
-      }
+  async function renderPost() {
+    const params = new URLSearchParams(window.location.search);
+    const category = params.get('category') || 'BLOG';
+    const id = params.get('id');
+
+    const titleEl = document.querySelector('.post-title');
+    const metaEl = document.querySelector('.meta-grid');
+    const contentEl = document.querySelector('.post-content');
+
+    if (!id) {
+      setPostNotFound(titleEl, metaEl, contentEl);
+      return;
+    }
+
+    const items = await getItems(category);
+    const post = items.find(item => String(item.id) === id);
+
+    if (!post) {
+      setPostNotFound(titleEl, metaEl, contentEl);
+      return;
+    }
+
+    document.title = `${post.title} | SOAOWN`;
+    titleEl.textContent = post.title;
+
+    // 책 표지 배경
+    const postHeader = document.querySelector(".post-header");
+    if (postHeader && post.cover_url) {
+      postHeader.style.setProperty("--cover-url", `url("${post.cover_url}")`);
+    }
+
+    metaEl.innerHTML = renderPostMeta(post);
+
+    contentEl.innerHTML = post.content || '';
+    contentEl.querySelectorAll(".footnote-ref").forEach(ref => {
+      ref.removeAttribute("title");
     });
   }
-});
 
-// ===== 그 툴바 ====
-// 굵게
-function formatText(command) {
+  async function loadEditPost(id) {
+    const category = document.body.dataset.category;
+    const items = await getItems(category);
 
-  const editor =
-    document.getElementById("content-input");
+    const post = items.find(item => String(item.id) === id);
+    if (!post) return;
 
-  if (!editor) return;
+    currentEditingId = id;
+    showAddForm();
 
-  editor.focus();
+    const setVal = (inputId, value) => {
+      const el = document.getElementById(inputId);
+      if (el) el.value = value;
+    };
 
-  const selectedImage =
-    document.querySelector(".image-box.selected");
+    setVal('title-input', post.title || '');
+    setVal('date-input', post.date ? new Date(post.date).toISOString().split('T')[0] : '');
+    setVal('category-input', post.subcategory || '');
+    setVal('link-input', post.link || '');
+    setVal('author-input', post.author || '');
+    setVal('publisher-input', post.publisher || '');
+    setVal('details-input', post.details || '');
 
-  if (
-    selectedImage &&
-    (
-      command === "justifyCenter" ||
-      command === "justifyLeft" ||
-      command === "justifyRight"
-    )
-  ) {
+    const contentEl = document.getElementById('content-input');
+    if (contentEl) contentEl.innerHTML = post.content || '';
 
+    document.querySelectorAll(".footnote-ref").forEach(ref => {
+      ref.removeAttribute("title");
+    });
+
+    // 표지 이미지 복원
+    coverUrl = post.cover_url || "";
+    const titleBanner = document.querySelector(".title-banner-preview");
+    if (titleBanner && coverUrl) {
+      titleBanner.style.setProperty("--cover-url", `url("${coverUrl}")`);
+    }
+
+    document.querySelectorAll('.add-form textarea').forEach(autoResizeTextarea);
+  }
+
+  // ===== 11. 에디터 툴바 =====
+  const ALIGN_COMMANDS = ['justifyCenter', 'justifyLeft', 'justifyRight'];
+
+  function formatText(command) {
+    const editor = getEditor();
+    if (!editor) return;
+    editor.focus();
+
+    const selectedImage = document.querySelector(".image-box.selected");
+
+    // 이미지가 선택된 상태에서 정렬 명령은 이미지에 적용
+    if (selectedImage && ALIGN_COMMANDS.includes(command)) {
+      applyImageAlignment(selectedImage, command);
+      return;
+    }
+
+    // 텍스트 가운데 정렬 토글 (이미 가운데면 좌측으로)
     if (command === "justifyCenter") {
-      // 이미지 가운데 정렬 토글
-      const m = selectedImage.style.margin;
+      let isCentered = false;
+      try {
+        isCentered = document.queryCommandState("justifyCenter");
+      } catch (e) {
+        isCentered = false;
+      }
+      if (isCentered) {
+        document.execCommand("justifyLeft", false, null);
+        return;
+      }
+    }
+
+    document.execCommand(command, false, null);
+  }
+
+  function applyImageAlignment(box, command) {
+    if (command === "justifyCenter") {
+      const m = box.style.margin;
       const isCentered =
         m === "1rem auto" ||
         m === "1rem auto 1rem auto" ||
         m.indexOf("auto") !== -1;
 
       if (isCentered) {
-        selectedImage.style.margin = "";
-        selectedImage.style.display = "";
+        box.style.margin = "";
+        box.style.display = "";
       } else {
-        selectedImage.style.display = "block";
-        selectedImage.style.margin = "1rem auto";
+        box.style.display = "block";
+        box.style.margin = "1rem auto";
       }
-      return;
-    }
-
-    if (command === "justifyLeft") {
-      selectedImage.style.display = "block";
-      selectedImage.style.margin = "1rem 0";
-    }
-
-    if (command === "justifyRight") {
-      selectedImage.style.display = "block";
-      selectedImage.style.margin = "1rem 0 1rem auto";
-    }
-
-    return;
-  }
-
-  // 텍스트 가운데 정렬 토글 (이미 가운데면 해제)
-  if (command === "justifyCenter") {
-    let isCentered = false;
-    try {
-      isCentered = document.queryCommandState("justifyCenter");
-    } catch (e) {
-      isCentered = false;
-    }
-    if (isCentered) {
-      document.execCommand("justifyLeft", false, null);
-      return;
+    } else if (command === "justifyLeft") {
+      box.style.display = "block";
+      box.style.margin = "1rem 0";
+    } else if (command === "justifyRight") {
+      box.style.display = "block";
+      box.style.margin = "1rem 0 1rem auto";
     }
   }
 
-  document.execCommand(
-    command,
-    false,
-    null
-  );
-}
-
-// 사진 버튼
-function insertImage() {
-
-  const imageInput =
-    document.getElementById("image-input");
-
-  if (!imageInput) return;
-
-  imageInput.click();
-}
-
-// 이미지 삽입
-document
-  .getElementById("image-input")
-  ?.addEventListener(
-    "change",
-    async function () {
-
-      const file = this.files[0];
-
-      if (!file) return;
-
-      const editor =
-        document.getElementById(
-          "content-input"
-        );
-
-      if (!editor) return;
-
-      // ===== Supabase Storage에 이미지 업로드 =====
-      const fileExt =
-        file.name.split(".").pop();
-
-      const fileName =
-        `${Date.now()}-${Math.random()}.${fileExt}`;
-
-      const filePath =
-        `posts/${fileName}`;
-
-      const { error } = await db.storage
-        .from("post-images")
-        .upload(filePath, file);
-
-      if (error) {
-        console.error(error);
-        alert("이미지 업로드 실패");
-        return;
-      }
-
-      const { data } = db.storage
-        .from("post-images")
-        .getPublicUrl(filePath);
-
-      const box =
-        document.createElement("span");
-
-      box.className = "image-box";
-      box.contentEditable = "false";
-      box.style.width = "300px";
-      box.style.height = "auto";
-
-      const img =
-        document.createElement("img");
-
-      // 기존 e.target.result 대신 publicUrl 사용
-      img.src = data.publicUrl;
-      img.loading = "lazy";
-      img.decoding = "async";
-      img.fetchPriority = "low";
-
-      box.appendChild(img);
-
-      const handle =
-        document.createElement("div");
-
-      handle.className =
-        "resize-handle";
-
-      box.appendChild(handle);
-
-      const footnoteList =
-        editor.querySelector(".footnote-list");
-
-      if (footnoteList) {
-        editor.insertBefore(box, footnoteList);
-        editor.insertBefore(
-          document.createElement("br"),
-          footnoteList
-        );
-      } else {
-        editor.appendChild(box);
-        editor.appendChild(
-          document.createElement("br")
-        );
-      }
-
-      this.value = "";
-    }
-  );
-
-// 글씨 색상
-function setTextColor(color) {
-  const editor =
-    document.getElementById("content-input");
-
-  if (!editor) return;
-
-  editor.focus();
-
-  document.execCommand(
-    "foreColor",
-    false,
-    color
-  );
-}
-
-// 글씨 하이라이트
-function setHighlight(color) {
-  const editor =
-    document.getElementById("content-input");
-
-  if (!editor) return;
-
-  editor.focus();
-
-  document.execCommand(
-    "hiliteColor",
-    false,
-    color
-  );
-}
-
-// ===== 글씨색 / 하이라이트 드롭다운 =====
-function toggleColorDropdown(triggerEl) {
-  const dropdown = triggerEl.closest(".color-dropdown");
-  if (!dropdown) return;
-
-  const wasOpen = dropdown.classList.contains("open");
-
-  // 다른 드롭다운은 모두 닫기
-  document
-    .querySelectorAll(".color-dropdown.open")
-    .forEach(d => d.classList.remove("open"));
-
-  if (!wasOpen) {
-    dropdown.classList.add("open");
-  }
-}
-
-function pickTextColor(swatchEl, color) {
-  const dropdown = swatchEl.closest(".color-dropdown");
-  if (dropdown) {
-    const bar = dropdown.querySelector(".trigger-bar");
-    if (bar) bar.style.background = color;
-    dropdown.classList.remove("open");
-  }
-  setTextColor(color);
-}
-
-function pickHighlight(swatchEl, color) {
-  const dropdown = swatchEl.closest(".color-dropdown");
-  const bar = dropdown ? dropdown.querySelector(".trigger-bar") : null;
-
-  const editor = document.getElementById("content-input");
-  if (!editor) {
-    if (dropdown) dropdown.classList.remove("open");
-    return;
-  }
-  editor.focus();
-
-  // 현재 selection의 하이라이트 색상 확인
-  let current = "";
-  try {
-    current =
-      document.queryCommandValue("backColor") ||
-      document.queryCommandValue("hiliteColor") ||
-      "";
-  } catch (e) {
-    current = "";
+  function setTextColor(color) {
+    const editor = getEditor();
+    if (!editor) return;
+    editor.focus();
+    document.execCommand("foreColor", false, color);
   }
 
-  if (isSameColor(current, color)) {
-    // 같은 색이면 해제 (토글)
-    document.execCommand("hiliteColor", false, "transparent");
-    if (bar) bar.style.background = "transparent";
-  } else {
+  function setHighlight(color) {
+    const editor = getEditor();
+    if (!editor) return;
+    editor.focus();
     document.execCommand("hiliteColor", false, color);
-    if (bar) bar.style.background = color;
   }
 
-  if (dropdown) dropdown.classList.remove("open");
-}
-
-// 색상 비교용 헬퍼
-function isSameColor(a, b) {
-  const na = normalizeColor(a);
-  const nb = normalizeColor(b);
-  if (!na || !nb) return false;
-  return na === nb;
-}
-
-function normalizeColor(color) {
-  if (!color) return "";
-  color = String(color).trim().toLowerCase();
-  if (
-    !color ||
-    color === "transparent" ||
-    color === "rgba(0, 0, 0, 0)"
-  ) {
-    return "";
+  function removeHighlight() {
+    const editor = getEditor();
+    if (!editor) return;
+    editor.focus();
+    document.execCommand("hiliteColor", false, "transparent");
   }
-  if (color.startsWith("#")) {
-    if (color.length === 4) {
-      return "#" + color[1] + color[1] + color[2] + color[2] + color[3] + color[3];
-    }
-    return color;
-  }
-  if (color.startsWith("rgb")) {
-    const m = color.match(/\d+/g);
-    if (m && m.length >= 3) {
-      const hex = n =>
-        parseInt(n, 10).toString(16).padStart(2, "0");
-      return "#" + hex(m[0]) + hex(m[1]) + hex(m[2]);
-    }
-  }
-  return color;
-}
 
-// 바깥 영역 클릭 시 드롭다운 닫기
-document.addEventListener("click", function (e) {
-  if (!e.target.closest(".color-dropdown")) {
-    document
-      .querySelectorAll(".color-dropdown.open")
+  // 색상 드롭다운
+  function toggleColorDropdown(triggerEl) {
+    const dropdown = triggerEl.closest(".color-dropdown");
+    if (!dropdown) return;
+
+    const wasOpen = dropdown.classList.contains("open");
+    closeAllColorDropdowns();
+    if (!wasOpen) dropdown.classList.add("open");
+  }
+
+  function closeAllColorDropdowns() {
+    document.querySelectorAll(".color-dropdown.open")
       .forEach(d => d.classList.remove("open"));
   }
-});
 
-// ===== 각주 기능 =====
-let footnoteCount = 1;
-
-function insertFootnote() {
-  const editor =
-    document.getElementById("content-input");
-
-  if (!editor) return;
-
-  editor.focus();
-
-  const note = prompt("placeholder=Enter annotation(optical)");
-  if (!note) return;
-
-  const number = footnoteCount++;
-
-  const sup = document.createElement("sup");
-  sup.className = "footnote-ref";
-  sup.textContent = `[${number}]`;
-  sup.dataset.note = note;
-  sup.dataset.number = number;
-  sup.contentEditable = "false";
-
-  const after = document.createElement("span");
-  after.className = "after-footnote";
-  after.innerHTML = "&nbsp;";
-
-  const selection = window.getSelection();
-
-  if (selection.rangeCount) {
-    const range = selection.getRangeAt(0);
-
-    range.insertNode(after);
-    range.insertNode(sup);
-
-    range.setStartAfter(after);
-    range.setEndAfter(after);
-
-    selection.removeAllRanges();
-    selection.addRange(range);
-  } else {
-    editor.appendChild(sup);
-    editor.appendChild(after);
-  }
-}
-
-// ===== 이미지 선택 =====
-document.addEventListener("click", function (e) {
-
-  document
-    .querySelectorAll(".image-box")
-    .forEach(box => {
-      box.classList.remove("selected");
-    });
-
-  const box =
-    e.target.closest(".image-box");
-
-  if (box) {
-    box.classList.add("selected");
-  }
-});
-
-// ===== 이미지 리사이즈 =====
-document.addEventListener("mousedown", function (e) {
-
-  if (
-    !e.target.classList.contains(
-      "resize-handle"
-    )
-  ) return;
-
-  e.preventDefault();
-
-  const box =
-    e.target.parentElement;
-
-  const startX = e.clientX;
-
-  const startWidth =
-    box.offsetWidth;
-
-  function resize(ev) {
-
-    const newWidth =
-      startWidth +
-      (ev.clientX - startX);
-
-    box.style.width =
-      newWidth + "px";
+  function pickTextColor(swatchEl, color) {
+    const dropdown = swatchEl.closest(".color-dropdown");
+    if (dropdown) {
+      const bar = dropdown.querySelector(".trigger-bar");
+      if (bar) bar.style.background = color;
+      dropdown.classList.remove("open");
+    }
+    setTextColor(color);
   }
 
-  function stopResize() {
+  function pickHighlight(swatchEl, color) {
+    const dropdown = swatchEl.closest(".color-dropdown");
+    const bar = dropdown ? dropdown.querySelector(".trigger-bar") : null;
 
-    document.removeEventListener(
-      "mousemove",
-      resize
-    );
+    const editor = getEditor();
+    if (!editor) {
+      if (dropdown) dropdown.classList.remove("open");
+      return;
+    }
+    editor.focus();
 
-    document.removeEventListener(
-      "mouseup",
-      stopResize
-    );
+    // 현재 selection의 하이라이트 색상 확인
+    let current = "";
+    try {
+      current = document.queryCommandValue("backColor")
+        || document.queryCommandValue("hiliteColor")
+        || "";
+    } catch (e) {
+      current = "";
+    }
+
+    if (isSameColor(current, color)) {
+      // 같은 색이면 해제 (토글)
+      document.execCommand("hiliteColor", false, "transparent");
+      if (bar) bar.style.background = "transparent";
+    } else {
+      document.execCommand("hiliteColor", false, color);
+      if (bar) bar.style.background = color;
+    }
+
+    if (dropdown) dropdown.classList.remove("open");
   }
 
-  document.addEventListener(
-    "mousemove",
-    resize
-  );
-
-  document.addEventListener(
-    "mouseup",
-    stopResize
-  );
-});
-
-// ===== 각주 팝업 =====
-document.addEventListener("click", function (e) {
-  const ref = e.target.closest(".footnote-ref");
-
-  document.querySelector(".footnote-popup")?.remove();
-
-  if (!ref) return;
-
-  const popup = document.createElement("div");
-  popup.className = "footnote-popup";
-  popup.textContent =
-    ref.dataset.note || ref.title || "";
-
-  document.body.appendChild(popup);
-
-  const rect = ref.getBoundingClientRect();
-
-  popup.style.left =
-    rect.left + window.scrollX + "px";
-
-  popup.style.top =
-    rect.bottom + window.scrollY + 8 + "px";
-});
-
-// ===== 관리자 모드 =====
-function isAdminMode() {
-  return localStorage.getItem("adminMode") === "true";
-}
-
-function applyAdminMode() {
-  document.body.classList.toggle("admin-mode", isAdminMode());
-}
-
-document.addEventListener(
-  "DOMContentLoaded",
-  applyAdminMode
-);
-
-function guardKnowledge(event) {
-  if (!isAdminMode()) {
-    event.preventDefault();
-    openAdminPopup();
-  }
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  if (document.body.dataset.category === "KNOWLEDGE" && !isAdminMode()) {
-    location.href = "index.html";
-  }
-});
-
-function guardAddForm() {
-  if (!isAdminMode()) {
-    openAdminPopup();
-    return;
+  function handleColorDropdownOutsideClick(e) {
+    if (!e.target.closest(".color-dropdown")) {
+      closeAllColorDropdowns();
+    }
   }
 
-  showAddForm();
-}
-
-function openAdminPopup() {
-  const popup = document.getElementById("admin-popup");
-
-  if (!popup) {
-    alert("ADMIN");
-    return;
+  // ===== 12. 에디터 이미지 (삽입, 선택, 리사이즈) =====
+  function insertImage() {
+    const imageInput = document.getElementById("image-input");
+    if (imageInput) imageInput.click();
   }
 
-  popup.style.display = "flex";
-
-  const input = document.getElementById("admin-password-input");
-  if (input) input.focus();
-}
-
-function closeAdminPopup() {
-  const popup = document.getElementById("admin-popup");
-  if (popup) popup.style.display = "none";
-}
-
-function submitAdminPassword() {
-  const input = document.getElementById("admin-password-input");
-  const password = input ? input.value : "";
-
-  if (password === "0310") {
-    localStorage.setItem("adminMode", "true");
-    applyAdminMode();
-    closeAdminPopup();
-  } else {
-    const error = document.getElementById("error-popup");
-    if (error) error.style.display = "flex";
-  }
-}
-
-// 하이라이트 제거
-function removeHighlight() {
-
-  const editor =
-    document.getElementById(
-      "content-input"
-    );
-
-  if (!editor) return;
-
-  editor.focus();
-
-  document.execCommand(
-    "hiliteColor",
-    false,
-    "transparent"
-  );
-}
-
-document
-  .getElementById("cover-input")
-  ?.addEventListener("change", async function () {
-    const file = this.files[0];
-
+  async function handleImageInputChange(e) {
+    const input = e.target;
+    const file = input.files[0];
     if (!file) return;
 
-    const fileName = `cover-${Date.now()}-${file.name}`;
+    const editor = getEditor();
+    if (!editor) return;
 
-    const { data, error } = await db.storage
-      .from("post-images")
-      .upload(fileName, file);
-
-    if (error) {
-      console.error("표지 업로드 실패:", error);
+    const publicUrl = await uploadImage(file);
+    if (!publicUrl) {
+      alert("이미지 업로드 실패");
       return;
     }
 
-    const { data: publicData } = db.storage
-      .from("post-images")
-      .getPublicUrl(fileName);
+    insertImageBox(editor, publicUrl);
+    input.value = "";
+  }
 
-    coverUrl = publicData.publicUrl;
+  function insertImageBox(editor, publicUrl) {
+    const box = document.createElement("span");
+    box.className = "image-box";
+    box.contentEditable = "false";
+    box.style.width = IMAGE_BOX_DEFAULT_WIDTH + "px";
+    box.style.height = "auto";
 
-    // ===== 제목 배너 미리보기 =====
-    const titleBanner =
-      document.querySelector(
-        ".title-banner-preview"
-      );
+    const img = document.createElement("img");
+    img.src = publicUrl;
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.fetchPriority = "low";
+    box.appendChild(img);
 
-    if (titleBanner) {
-      titleBanner.style.setProperty(
-        "--cover-url",
-        `url("${coverUrl}")`
-      );
+    const handle = document.createElement("div");
+    handle.className = "resize-handle";
+    box.appendChild(handle);
+
+    const footnoteList = editor.querySelector(".footnote-list");
+    if (footnoteList) {
+      editor.insertBefore(box, footnoteList);
+      editor.insertBefore(document.createElement("br"), footnoteList);
+    } else {
+      editor.appendChild(box);
+      editor.appendChild(document.createElement("br"));
+    }
+  }
+
+  function handleImageBoxClick(e) {
+    document.querySelectorAll(".image-box").forEach(box => {
+      box.classList.remove("selected");
+    });
+    const box = e.target.closest(".image-box");
+    if (box) box.classList.add("selected");
+  }
+
+  function handleImageResizeStart(e) {
+    if (!e.target.classList.contains("resize-handle")) return;
+    e.preventDefault();
+
+    const box = e.target.parentElement;
+    const startX = e.clientX;
+    const startWidth = box.offsetWidth;
+
+    function resize(ev) {
+      const newWidth = startWidth + (ev.clientX - startX);
+      box.style.width = newWidth + "px";
     }
 
-    alert("cover image added");
+    function stopResize() {
+      document.removeEventListener("mousemove", resize);
+      document.removeEventListener("mouseup", stopResize);
+    }
+
+    document.addEventListener("mousemove", resize);
+    document.addEventListener("mouseup", stopResize);
+  }
+
+  // ===== 13. 각주 =====
+  function insertFootnote() {
+    const editor = getEditor();
+    if (!editor) return;
+    editor.focus();
+
+    const note = prompt("placeholder=Enter annotation(optical)");
+    if (!note) return;
+
+    const number = footnoteCount++;
+
+    const sup = document.createElement("sup");
+    sup.className = "footnote-ref";
+    sup.textContent = `[${number}]`;
+    sup.dataset.note = note;
+    sup.dataset.number = number;
+    sup.contentEditable = "false";
+
+    const after = document.createElement("span");
+    after.className = "after-footnote";
+    after.innerHTML = "&nbsp;";
+
+    const selection = window.getSelection();
+    if (selection.rangeCount) {
+      const range = selection.getRangeAt(0);
+      range.insertNode(after);
+      range.insertNode(sup);
+      range.setStartAfter(after);
+      range.setEndAfter(after);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } else {
+      editor.appendChild(sup);
+      editor.appendChild(after);
+    }
+  }
+
+  function handleFootnoteClick(e) {
+    const ref = e.target.closest(".footnote-ref");
+
+    document.querySelector(".footnote-popup")?.remove();
+
+    if (!ref) return;
+
+    const popup = document.createElement("div");
+    popup.className = "footnote-popup";
+    popup.textContent = ref.dataset.note || ref.title || "";
+    document.body.appendChild(popup);
+
+    const rect = ref.getBoundingClientRect();
+    popup.style.left = rect.left + window.scrollX + "px";
+    popup.style.top = rect.bottom + window.scrollY + 8 + "px";
+  }
+
+  // ===== 14. textarea / meta input 자동 크기 =====
+  function autoResizeTextarea(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+
+  function resizeMetaInput(input) {
+    input.style.width =
+      Math.max(input.value.length + META_INPUT_PADDING, META_INPUT_MIN_WIDTH) + 'ch';
+  }
+
+  function setupAutoResizeTitle() {
+    const titleInput = document.getElementById("title-input");
+    if (!titleInput) return;
+
+    const resize = () => {
+      titleInput.style.height = "auto";
+      titleInput.style.height = titleInput.scrollHeight + "px";
+    };
+
+    resize();
+    titleInput.addEventListener("input", resize);
+    titleInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") e.preventDefault();
+    });
+  }
+
+  // ===== 15. 어드민 진입 가드 (admin.js의 isAdminMode / openAdminPopup 사용) =====
+  function guardAddForm() {
+    if (!window.isAdminMode()) {
+      window.openAdminPopup();
+      return;
+    }
+    showAddForm();
+  }
+
+  function guardKnowledgePage() {
+    if (document.body.dataset.category === "KNOWLEDGE" && !window.isAdminMode()) {
+      location.href = "index.html";
+      return true;
+    }
+    return false;
+  }
+
+  // ===== 16. 부트스트랩 =====
+  function bindGlobalEvents() {
+    document.getElementById("image-input")
+      ?.addEventListener("change", handleImageInputChange);
+
+    document.getElementById("cover-input")
+      ?.addEventListener("change", handleCoverInputChange);
+
+    document.querySelectorAll('.add-form textarea').forEach(ta => {
+      ta.addEventListener('input', () => autoResizeTextarea(ta));
+    });
+
+    document.querySelectorAll('.meta-grid input').forEach(input => {
+      resizeMetaInput(input);
+      input.addEventListener('input', () => resizeMetaInput(input));
+    });
+
+    document.addEventListener("click", handleImageBoxClick);
+    document.addEventListener("click", handleFootnoteClick);
+    document.addEventListener("click", handleColorDropdownOutsideClick);
+    document.addEventListener("mousedown", handleImageResizeStart);
+  }
+
+  async function bootstrap() {
+    // KNOWLEDGE 페이지는 어드민이 아니면 즉시 리다이렉트
+    if (guardKnowledgePage()) return;
+
+    const pageType = document.body.dataset.page;
+    if (pageType === 'post') {
+      await renderPost();
+    } else if (document.body.dataset.category) {
+      await renderList();
+
+      const editId = new URLSearchParams(window.location.search).get('edit');
+      if (editId) await loadEditPost(editId);
+    }
+
+    bindGlobalEvents();
+    setupAutoResizeTitle();
+  }
+
+  document.addEventListener('DOMContentLoaded', bootstrap);
+
+  // ===== 17. 인라인 onclick 노출 =====
+  Object.assign(window, {
+    // 검색 / 폼
+    handleSearch,
+    guardAddForm,
+    showAddForm,
+    hideAddForm,
+    selectCoverImage,
+    handleSubmit,
+
+    // 상세
+    editPost,
+    deletePost,
+
+    // 에디터 툴바
+    formatText,
+    setTextColor,
+    setHighlight,
+    removeHighlight,
+    toggleColorDropdown,
+    pickTextColor,
+    pickHighlight,
+
+    // 이미지 / 각주
+    insertImage,
+    insertFootnote,
   });
+})();

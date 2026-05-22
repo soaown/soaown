@@ -47,67 +47,7 @@
   </script>
 
   <button class="admin-btn" onclick="openAdminPopup()">ADMIN</button>
-  <script>
-    const ADMIN_PASSWORD = "0310";
-
-    function isAdminMode() {
-      return localStorage.getItem("adminMode") === "true";
-    }
-
-    function applyAdminMode() {
-      document.body.classList.toggle("admin-mode", isAdminMode());
-    }
-
-    function openAdminPopup() {
-      const popup = document.getElementById("admin-popup") || document.getElementById("password-popup");
-
-      if (!popup) {
-        alert("ADMIN");
-        return;
-      }
-
-      popup.style.display = "flex";
-      const input = document.getElementById("admin-password-input");
-      if (input) input.focus();
-    }
-
-    function closeAdminPopup() {
-      const popup = document.getElementById("admin-popup") || document.getElementById("password-popup");
-
-      if (!popup) return;
-
-      popup.style.display = "none";
-    }
-
-    function submitAdminPassword() {
-      const password = document.getElementById("admin-password-input").value;
-
-      if (password === ADMIN_PASSWORD) {
-        localStorage.setItem("adminMode", "true");
-        applyAdminMode();
-        closeAdminPopup();
-      } else {
-        openErrorPopup();
-      }
-    }
-
-    function openErrorPopup() {
-      document.getElementById("error-popup").style.display = "flex";
-    }
-
-    function closeErrorPopup() {
-      document.getElementById("error-popup").style.display = "none";
-    }
-
-    function guardKnowledge(event) {
-      if (!isAdminMode()) {
-        event.preventDefault();
-        openAdminPopup();
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", applyAdminMode);
-  </script>
+  <script src="admin.js"></script>
 
   <button class="fab-top">⌃</button>
   <script>
@@ -140,7 +80,7 @@
   <div id="error-popup" class="password-popup" style="display:none;">
     <div class="password-box">
       <p class="error-text">
-        <img src="/soaown/assets/sleep.png" class="sleepy-img">
+        <img src="/soaown/assets/sleepy.png" class="sleepy-img">
       </p>
       <div class="password-buttons">
         <button onclick="closeErrorPopup()">OK</button>
