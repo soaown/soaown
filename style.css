@@ -6,9 +6,10 @@
 
 body {
   font-family: "Inter", sans-serif;
-  background-image: url("https://i.pinimg.com/1200x/4f/18/66/4f18663dc271b29e9280577ed995e2f1.jpg");
+  background-image: url("https://i.pinimg.com/1200x/c5/1b/64/c51b645fe405be873542bcdd34ad142d.jpg");
   color: #030201;
   background-size: cover;
+  background-repeat: no-repeat;
   background-position: top center;
   font-size: 16px;
   line-height: 1.5;
@@ -1557,7 +1558,6 @@ body.admin-mode .admin-btn {
   position: relative;
   overflow: hidden;
   padding: 2rem 2rem 0;
-  margin-left: 0.6rem;
 
   background: transparent;
 }
