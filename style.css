@@ -1557,7 +1557,7 @@ body.admin-mode .admin-btn {
   position: relative;
   overflow: hidden;
   padding: 2rem 2rem 0;
-  margin-bottom: 1.5rem;
+  margin-left: 0.6rem;
 
   background: transparent;
 }
@@ -1580,8 +1580,8 @@ body.admin-mode .admin-btn {
 
   mask-image: linear-gradient(to bottom,
       black 0%,
-      black 35%,
-      rgba(0, 0, 0, 0.5) 55%,
+      black 55%,
+      rgba(0, 0, 0, 0.5) 70%,
       transparent 100%);
 
   z-index: 0;
