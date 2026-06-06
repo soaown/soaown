@@ -1175,7 +1175,7 @@ main,
   right: 3.3rem;
   z-index: 20;
   background: transparent;
-  border-radius: 10px;
+  border-radius: 30px;
   margin: 0;
   display: flex;
   padding: 0.3rem 0.5rem;
@@ -1387,7 +1387,7 @@ body.admin-mode .admin-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.15rem 0.55rem !important;
+  padding: 0.1rem 1rem !important;
   pointer-events: auto;
 }
 
@@ -1403,10 +1403,9 @@ body.admin-mode .admin-btn {
 }
 
 .editor-toolbar .color-trigger {
-  background: transparent !important;
   color: #000000 !important;
   border-radius: 6px !important;
-  padding: 0.1rem 0.85rem 0.15rem 0.4rem !important;
+  padding: 0.1rem 0.4rem 0.15rem 0.4rem !important;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -1415,39 +1414,19 @@ body.admin-mode .admin-btn {
   line-height: 1;
 }
 
-.editor-toolbar .color-trigger:hover {
-  background: rgba(0, 0, 0, 0.05) !important;
+.editor-toolbar button:hover {
+  background: rgb(255, 89, 0) !important;
 }
 
 .editor-toolbar .color-trigger .trigger-letter {
   font-weight: 700;
   font-size: 0.8rem;
-  color: #000000;
+  color: #ffffff;
   line-height: 1;
-  background: #D3F8B6;
   border-radius: 50%;
-  width: 1.5em;
-  height: 1.5em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.editor-toolbar .color-trigger .trigger-bar {
-  display: block;
-  width: 1.1em;
-  height: 4px;
-  border-radius: 1px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-}
-
-.editor-toolbar .color-trigger .trigger-arrow {
-  position: absolute;
-  right: 2px;
-  bottom: 1px;
-  font-size: 0.45rem;
-  color: #888;
-  line-height: 1;
 }
 
 /* 드롭다운 패널 */
@@ -1483,20 +1462,14 @@ body.admin-mode .admin-btn {
   transition: transform 0.12s ease;
 }
 
-.editor-toolbar .color-swatch:hover {
-  transform: scale(1.12);
-}
-
 .cover-btn {
   border: none;
   background: rgba(255, 255, 255, 0.18);
-  color: #1a0089;
   border-radius: 999px;
   padding: 0.3rem 1rem;
   font-family: inherit;
   font-size: 0.75rem;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
 .post-header {

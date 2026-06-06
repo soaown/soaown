@@ -40,9 +40,6 @@
     <div class="add-section">
       <form id="add-form" class="add-form" onsubmit="handleSubmit(event)" style="display:none;">
         <input type="file" id="cover-input" accept="image/*" hidden>
-        <button type="button" class="cover-btn" onclick="selectCoverImage()">
-          + image
-        </button>
         <div class="title-banner-preview">
           <textarea id="title-input" placeholder="제목" required rows="1"></textarea>
           <div class="meta-grid">
@@ -56,23 +53,17 @@
         </div>
         <div class="editor-box">
           <div class="editor-toolbar">
-            <button type="button" onclick="formatText('bold')">B</button>
-            <button type="button" class="align-btn" onclick="formatText('justifyCenter')" title="가운데 정렬"
-              aria-label="가운데 정렬">
-              <svg viewBox="0 0 16 14" width="14" height="12" fill="currentColor" aria-hidden="true">
-                <rect x="0" y="1" width="16" height="1.6" rx="0.8" />
-                <rect x="3" y="6.2" width="10" height="1.6" rx="0.8" />
-                <rect x="0" y="11.4" width="16" height="1.6" rx="0.8" />
-              </svg>
+            <button type="button" class="cover-btn" onclick="selectCoverImage()">
+              banner
             </button>
+            <button type="button" onclick="formatText('bold')">bold</button>
+            <button type="button" class="align-btn" onclick="formatText('justifyCenter')">Centeralign</button>
 
             <!-- 글씨색 드롭다운 -->
             <div class="color-dropdown" data-mode="text">
               <button type="button" class="color-trigger" onclick="toggleColorDropdown(this)" title="글씨색"
                 aria-label="글씨색">
-                <span class="trigger-letter">A</span>
-                <span class="trigger-bar" style="background:#000000"></span>
-                <span class="trigger-arrow">▼</span>
+                <span class="trigger-letter">textcolor</span>
               </button>
               <div class="color-panel">
                 <button type="button" class="color-swatch" style="background:#000000"
@@ -90,9 +81,7 @@
             <div class="color-dropdown" data-mode="highlight">
               <button type="button" class="color-trigger" onclick="toggleColorDropdown(this)" title="하이라이트"
                 aria-label="하이라이트">
-                <span class="trigger-letter">H</span>
-                <span class="trigger-bar" style="background:#D3F8B6"></span>
-                <span class="trigger-arrow">▼</span>
+                <span class="trigger-letter">Highligcolor</span>
               </button>
               <div class="color-panel">
                 <button type="button" class="color-swatch" style="background:#D3F8B6"
@@ -103,15 +92,15 @@
                   onclick="pickHighlight(this,'#a0ccf6')" title="파랑" aria-label="파랑"></button>
                 <button type="button" class="color-swatch" style="background:#ffffff"
                   onclick="pickHighlight(this,'#ffffff')" title="흰색" aria-label="흰색"></button>
-                <button type="button" class="color-swatch" style="background:#FFF200"
-                  onclick="pickHighlight(this,'#FFF200')" title="노랑" aria-label="노랑"></button>
+                <button type="button" class="color-swatch" style="background:#FF8f05"
+                  onclick="pickHighlight(this,'#FFF200')" title="노랑" aria-label="주황"></button>
                 <button type="button" class="color-swatch" style="background:#000000"
                   onclick="pickHighlight(this,'#000000')" title="검정" aria-label="검정"></button>
               </div>
             </div>
 
-            <button type="button" onclick="insertFootnote()">[^]</button>
-            <button type="button" onclick="insertImage()">PHOTO</button>
+            <button type="button" onclick="insertFootnote()">footnote</button>
+            <button type="button" onclick="insertImage()">photo</button>
           </div>
           <div id="content-input" contenteditable="true" data-placeholder="내용을 작성하세요..."></div>
         </div>
