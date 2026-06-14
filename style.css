@@ -581,7 +581,8 @@ main {
   .post-content {
     margin-left: 0.25rem;
     margin-right: 0.25rem;
-    font-weight: 400;
+    font-weight: 450;
+    font-size: 0.7rem;
   }
 }
 
