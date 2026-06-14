@@ -39,6 +39,7 @@
 
     <div class="add-section">
       <form id="add-form" class="add-form" onsubmit="handleSubmit(event)" style="display:none;">
+        <button type="button" class="cover-btn" onclick="removeCoverImage()">Remove</button>
         <input type="file" id="cover-input" accept="image/*" hidden>
         <div class="title-banner-preview">
           <textarea id="title-input" placeholder="제목" required rows="1"></textarea>

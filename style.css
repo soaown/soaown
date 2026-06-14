@@ -1464,12 +1464,15 @@ body.admin-mode .admin-btn {
 
 .cover-btn {
   border: none;
-  background: rgba(255, 255, 255, 0.18);
+  background: #ff5233;
   border-radius: 999px;
-  padding: 0.3rem 1rem;
+  padding: 0.1rem 1rem;
   font-family: inherit;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
   cursor: pointer;
+  height: 24px;
 }
 
 .post-header {
@@ -1571,4 +1574,8 @@ body.admin-mode .admin-btn {
   position: relative;
   z-index: 1;
   margin-top: 2rem;
+}
+
+.title-banner-preview.no-cover::before {
+  display: none;
 }

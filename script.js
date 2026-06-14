@@ -243,6 +243,25 @@
     if (input) input.click();
   }
 
+  window.removeCoverImage = function () {
+    coverUrl = "";
+
+    const titleBanner =
+      document.querySelector(".title-banner-preview");
+
+    if (titleBanner) {
+      titleBanner.style.setProperty("--cover-url", "none");
+      titleBanner.classList.add("no-cover");
+    }
+
+    const coverInput =
+      document.getElementById("cover-input");
+
+    if (coverInput) {
+      coverInput.value = "";
+    }
+  };
+
   async function handleCoverInputChange(e) {
     const file = e.target.files[0];
     if (!file) return;
