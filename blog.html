@@ -80,8 +80,7 @@
             <!-- 하이라이트 드롭다운 -->
             <div class="color-dropdown" data-mode="highlight">
               <button type="button" class="color-trigger" onclick="toggleColorDropdown(this)" title="하이라이트"
-                aria-label="하이라이트">
-                <span class="trigger-letter">Highligcolor</span>
+                aria-label="하이라이트">Highligcolor
               </button>
               <div class="color-panel">
                 <button type="button" class="color-swatch" style="background:#D3F8B6"
@@ -101,14 +100,14 @@
 
             <button type="button" onclick="insertFootnote()">footnote</button>
             <button type="button" onclick="insertImage()">photo</button>
+            <div class="form-buttons">
+              <button type="button" onclick="hideAddForm()">cancel</button>
+              <button type="submit">save</button>
+            </div>
           </div>
           <div id="content-input" contenteditable="true" data-placeholder="내용을 작성하세요..."></div>
         </div>
         <input type="file" id="image-input" accept="image/*" style="display:none;">
-        <div class="form-buttons">
-          <button type="button" onclick="hideAddForm()">취소</button>
-          <button type="submit">저장</button>
-        </div>
       </form>
     </div>
 

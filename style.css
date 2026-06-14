@@ -414,8 +414,6 @@ main {
   display: flex;
   gap: 0.5rem;
   justify-content: flex-end;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
 }
 
 .form-buttons button {
@@ -432,7 +430,7 @@ main {
 
 .form-buttons button[type="submit"] {
   background: #ff5e33;
-  color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
   border-color: #ff5e33;
 }
 
@@ -1373,7 +1371,7 @@ body.admin-mode .admin-btn {
 }
 
 .highlight-orange {
-  background: #fff200 !important;
+  background: #ff8f05 !important;
   color: #000000 !important;
 }
 
@@ -1400,33 +1398,23 @@ body.admin-mode .admin-btn {
   position: relative;
   display: inline-block;
   pointer-events: auto;
+  align-items: stretch;
 }
 
 .editor-toolbar .color-trigger {
-  color: #000000 !important;
-  border-radius: 6px !important;
-  padding: 0.1rem 0.4rem 0.15rem 0.4rem !important;
+  color: #ffffff !important;
+  padding: 0.1rem 1rem !important;
   display: inline-flex;
-  flex-direction: column;
   align-items: center;
-  gap: 2px;
+  justify-content: center;
   position: relative;
-  line-height: 1;
+  font-weight: 600;
+  font-size: 0.7rem;
+  color: #ffffff;
 }
 
 .editor-toolbar button:hover {
   background: rgb(255, 89, 0) !important;
-}
-
-.editor-toolbar .color-trigger .trigger-letter {
-  font-weight: 700;
-  font-size: 0.8rem;
-  color: #ffffff;
-  line-height: 1;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* 드롭다운 패널 */
