@@ -1126,7 +1126,7 @@ main,
 
 .image-row {
   display: flex;
-  gap: 0;
+  gap: 0.4rem;
   justify-content: center;
   align-items: flex-start;
   margin: 1.5rem 0;
