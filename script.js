@@ -460,10 +460,37 @@
     editor.focus();
 
     const selectedImage = document.querySelector(".image-box.selected");
+    const selectedRow = selectedImage?.closest(".image-row");
 
     // 이미지가 선택된 상태에서 정렬 명령은 이미지에 적용
-    if (selectedImage && ALIGN_COMMANDS.includes(command)) {
-      applyImageAlignment(selectedImage, command);
+    if (
+      selectedImage &&
+      (
+        command === "justifyCenter" ||
+        command === "justifyLeft" ||
+        command === "justifyRight"
+      )
+    ) {
+      const target = selectedRow || selectedImage;
+
+      if (command === "justifyCenter") {
+        target.style.display = selectedRow ? "flex" : "block";
+        target.style.justifyContent = "center";
+        target.style.margin = "1rem auto";
+      }
+
+      if (command === "justifyLeft") {
+        target.style.display = selectedRow ? "flex" : "block";
+        target.style.justifyContent = "flex-start";
+        target.style.margin = "1rem 0";
+      }
+
+      if (command === "justifyRight") {
+        target.style.display = selectedRow ? "flex" : "block";
+        target.style.justifyContent = "flex-end";
+        target.style.margin = "1rem 0 1rem auto";
+      }
+
       return;
     }
 
@@ -651,6 +678,74 @@
     });
     const box = e.target.closest(".image-box");
     if (box) box.classList.add("selected");
+  }
+
+  async function insertImageNextToSelected() {
+    const selectedBox = document.querySelector(".image-box.selected");
+
+    if (!selectedBox) {
+      alert("먼저 옆에 붙일 사진을 클릭해줘");
+      return;
+    }
+
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.style.display = "none";
+
+    document.body.appendChild(input);
+
+    input.addEventListener("change", async function () {
+      const file = input.files[0];
+
+      if (!file) {
+        input.remove();
+        return;
+      }
+
+      const publicUrl = await uploadImage(file);
+
+      if (!publicUrl) {
+        alert("이미지 업로드 실패");
+        input.remove();
+        return;
+      }
+
+      const newBox = document.createElement("span");
+      newBox.className = "image-box";
+      newBox.contentEditable = "false";
+      newBox.style.width = IMAGE_BOX_DEFAULT_WIDTH + "px";
+      newBox.style.height = "auto";
+
+      const img = document.createElement("img");
+      img.src = publicUrl;
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.fetchPriority = "low";
+
+      newBox.appendChild(img);
+
+      const handle = document.createElement("div");
+      handle.className = "resize-handle";
+      newBox.appendChild(handle);
+
+      let row = selectedBox.closest(".image-row");
+
+      if (!row) {
+        row = document.createElement("div");
+        row.className = "image-row";
+        row.contentEditable = "false";
+
+        selectedBox.parentNode.insertBefore(row, selectedBox);
+        row.appendChild(selectedBox);
+      }
+
+      row.appendChild(newBox);
+
+      input.remove();
+    });
+
+    input.click();
   }
 
   function handleImageResizeStart(e) {
@@ -841,6 +936,7 @@
 
     // 이미지 / 각주
     insertImage,
+    insertImageNextToSelected,
     insertFootnote,
   });
 })();
