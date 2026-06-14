@@ -579,9 +579,9 @@ main {
 
 @media (max-width: 600px) {
   .post-content {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-    font-weight: 600;
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
+    font-weight: 400;
   }
 }
 
