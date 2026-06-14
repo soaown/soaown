@@ -1336,6 +1336,7 @@ body.admin-mode .admin-btn {
   .item-title {
     width: 100%;
     font-weight: 700;
+    font-size: 1.2rem;
   }
 }
 
