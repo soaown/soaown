@@ -31,12 +31,14 @@
   <main>
     <h1 class="page-title">BOOK</h1>
     <div class="search-section">
-      <span class="fake-search">( guide )</span>
-      <div class="book-guide">Contents are organized by category.Select a section to view related entries.</div>
+      <span class="fake-search">( scan )</span>
+      <input type="text" id="search-input" class="search-input"
+        placeholder="search search search search search search search search............" oninput="handleSearch(event)">
       <button id="add-btn" class="add-btn" onclick="guardAddForm()">( edit )</button>
     </div>
 
     <div class="add-section">
+      <div class="book-guide">notice</div>
       <form id="add-form" class="add-form" onsubmit="handleSubmit(event)" style="display:none;">
         <button type="button" class="cover-btn" onclick="removeCoverImage()">Remove</button>
         <input type="file" id="cover-input" accept="image/*" hidden>
@@ -112,6 +114,7 @@
     </div>
 
     <ul class="item-list"></ul>
+    <div class="book-divider">▼▼▼ choose category ▼▼▼</div>
     <div id="book-subcategory-list" class="book-subcategory-list"></div>
   </main>
 

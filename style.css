@@ -1650,11 +1650,11 @@ body.admin-mode .admin-btn {
 }
 
 .book-subcategory-row {
-  display: grid;
+  display: flex;
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 0.9rem;
-
+  flex-direction: column;
   font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: 0.01em;
@@ -1674,6 +1674,9 @@ body.admin-mode .admin-btn {
   border-radius: 999px;
   padding: 0.1rem 0.6rem;
   background: white;
+  width: 11%;
+  align-items: center;
+  text-align: center;
 }
 
 .book-subcategory-row a:hover {
@@ -1684,12 +1687,23 @@ body.admin-mode .admin-btn {
 
 .book-guide {
   text-align: center;
-  font-size: 0.95rem;
+  font-size: 1.5rem;
   letter-spacing: 0.01em;
-  background: #ff5e33;
+  background: #1a0089;
   border-radius: 20px;
   display: inline-block;
   color: #030201;
-  padding: 0.7rem 1.2rem;
-  width: 60%;
+  width: 9%;
+}
+
+.book-divider {
+  text-align: center;
+  font-size: 1.5rem;
+  letter-spacing: 0.01em;
+  background: #1a0089;
+  border-radius: 20px;
+  display: inline-block;
+  color: #030201;
+  width: 30%;
+  margin-top: 1rem;
 }
