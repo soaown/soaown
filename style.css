@@ -1676,9 +1676,12 @@ body.admin-mode .admin-btn {
   border-radius: 3rem;
   padding: 0.1rem 0.7rem;
   background: #ff5e33;
-  width: 12%;
+  width: auto;
+  min-width: 90px;
   align-items: center;
-  text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 .book-subcategory-row a:hover {
@@ -1697,4 +1700,19 @@ body.admin-mode .admin-btn {
   color: #000000;
   width: 50%;
   margin-top: 1rem;
+}
+
+.mobile-break {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .mobile-break {
+    display: block;
+  }
+
+  .book-subcategory-row {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
 }

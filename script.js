@@ -236,8 +236,8 @@
 
       return `
       <div class="book-subcategory-row">
-        <span>click button ( ${name} ) ${count} posts waiting for you </span>
-        <a href="book.html?sub=${encodeURIComponent(name)}">here ></a>
+        <span class="browse-label">click browse button<span class="mobile-break"></span> ( ${name} ) ${count} posts waiting for you </span>
+        <a href="book.html?sub=${encodeURIComponent(name)}">browse ></a>
       </div>
     `;
     }).join("");
