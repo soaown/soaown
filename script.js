@@ -186,11 +186,17 @@
         <h2 class="item-title">
           <a href="post.html?category=${category}&id=${item.id}">${escapeHtml(item.title)}</a>
         </h2>
-        <div class="item-meta">
-          <span>${escapeHtml(item.date)}</span>
-          ${item.subcategory ? `<span>· ${escapeHtml(item.subcategory)}</span>` : ''}
+        <div class="item-footer">
+          <div class="item-meta">
+           <span>${escapeHtml(item.date)}</span>
+           ${item.subcategory ? `<span>· ${escapeHtml(item.subcategory)}</span>` : ''}
+          </div>
+          <div class="item-likes">
+          <span class="like-heart">♥︎</span>
+          <span class="like-count">${item.likes || 0}</span>
+          </div>
         </div>
-      </li>
+      </li>   
     `).join('');
   }
 
@@ -428,7 +434,50 @@
     contentEl.querySelectorAll(".footnote-ref").forEach(ref => {
       ref.removeAttribute("title");
     });
+
+    const likeBtn = document.getElementById("like-btn");
+    const likeCount = document.getElementById("like-count");
+
+    if (likeBtn && likeCount) {
+
+      likeCount.textContent = post.likes || 0;
+
+      const likedKey = `liked-post-${post.id}`;
+
+      if (localStorage.getItem(likedKey)) {
+        likeBtn.classList.add("liked");
+        likeBtn.innerHTML =
+          `♥ <span id="like-count">${post.likes || 0}</span>`;
+      }
+
+      likeBtn.onclick = async () => {
+
+        if (localStorage.getItem(likedKey)) return;
+
+        const newLikes = (post.likes || 0) + 1;
+
+        const { error } = await db
+          .from("posts")
+          .update({ likes: newLikes })
+          .eq("id", post.id);
+
+        if (error) {
+          console.error(error);
+          return;
+        }
+
+        localStorage.setItem(likedKey, "true");
+
+        post.likes = newLikes;
+
+        likeBtn.classList.add("liked");
+
+        likeBtn.innerHTML =
+          `♥ <span id="like-count">${newLikes}</span>`;
+      };
+    }
   }
+
 
   async function loadEditPost(id) {
     const category = document.body.dataset.category;
