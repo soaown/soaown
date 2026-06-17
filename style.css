@@ -1639,3 +1639,57 @@ body.admin-mode .admin-btn {
   /* 숫자 */
   font-weight: 500;
 }
+
+/* ===== book 소카테고리 ===== */
+.book-subcategory-list {
+  width: min(1000px, 82vw);
+  margin: 1.5rem auto 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.book-subcategory-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.9rem;
+
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.book-subcategory-row span {
+  grid-column: 1;
+  white-space: nowrap;
+}
+
+.book-subcategory-row a {
+  grid-column: 3;
+  color: inherit;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+  background: white;
+}
+
+.book-subcategory-row a:hover {
+  background: #b7cf4f;
+  color: white;
+  border-color: #b7cf4f;
+}
+
+.book-guide {
+  text-align: center;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  background: #ff5e33;
+  border-radius: 20px;
+  display: inline-block;
+  color: #030201;
+  padding: 0.7rem 1.2rem;
+  width: 60%;
+}

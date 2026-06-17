@@ -158,7 +158,25 @@
     const category = document.body.dataset.category;
     let items = await getItems(category);
 
+    const currentBookSubcategory =
+      new URLSearchParams(window.location.search).get("sub");
+
     items.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // BOOK이면 소카테고리 숫자 목록 만들기
+    if (category === "BOOK") {
+      if (currentBookSubcategory) {
+        items = items.filter(item =>
+          (item.subcategory || "")
+            .split(",")
+            .map(cat => cat.trim())
+            .includes(currentBookSubcategory)
+        );
+      } else {
+        items = items.slice(0, 1
+        );
+      }
+    }
 
     if (searchQuery) {
       items = items.filter(item => {
@@ -198,6 +216,31 @@
         </div>
       </li>   
     `).join('');
+
+    if (category === "BOOK" && !currentBookSubcategory) {
+      const allBookItems = await getItems("BOOK");
+      renderBookSubcategoryList(allBookItems);
+    }
+  }
+
+  function renderBookSubcategoryList(posts) {
+    const box = document.getElementById("book-subcategory-list");
+    if (!box) return;
+
+    const bookPosts = posts.filter(post => post.category === "BOOK");
+
+    const categories = ["시", "소설", "비문학", "고전"];
+
+    box.innerHTML = categories.map(name => {
+      const count = bookPosts.filter(post => post.subcategory === name).length;
+
+      return `
+      <div class="book-subcategory-row">
+        <span>${name} ✦ ${count} posts waiting for you</span>
+        <a href="book.html?sub=${encodeURIComponent(name)}">browse ></a>
+      </div>
+    `;
+    }).join("");
   }
 
   // ===== 8. add-form 표시/숨김 + 표지 이미지 =====
@@ -495,7 +538,7 @@
     };
 
     setVal('title-input', post.title || '');
-    setVal('date-input', post.date ? new Date(post.date).toISOString().split('T')[0] : '');
+    setVal('date-input', post.date ? toDateInputValue(post.date) : '');
     setVal('category-input', post.subcategory || '');
     setVal('link-input', post.link || '');
     setVal('author-input', post.author || '');
@@ -508,6 +551,20 @@
     document.querySelectorAll(".footnote-ref").forEach(ref => {
       ref.removeAttribute("title");
     });
+
+    function toDateInputValue(dateText) {
+      if (!dateText) return '';
+
+      const d = new Date(dateText);
+
+      if (Number.isNaN(d.getTime())) return '';
+
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+
+      return `${year}-${month}-${day}`;
+    }
 
     // 표지 이미지 복원
     coverUrl = post.cover_url || "";

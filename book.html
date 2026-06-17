@@ -31,9 +31,8 @@
   <main>
     <h1 class="page-title">BOOK</h1>
     <div class="search-section">
-      <span class="fake-search">( scan )</span>
-      <input type="text" id="search-input" class="search-input"
-        placeholder="search search search search search search search search............" oninput="handleSearch(event)">
+      <span class="fake-search">( guide )</span>
+      <div class="book-guide">Contents are organized by category.Select a section to view related entries.</div>
       <button id="add-btn" class="add-btn" onclick="guardAddForm()">( edit )</button>
     </div>
 
@@ -113,6 +112,7 @@
     </div>
 
     <ul class="item-list"></ul>
+    <div id="book-subcategory-list" class="book-subcategory-list"></div>
   </main>
 
   <button class="fab-top">⌃</button>
