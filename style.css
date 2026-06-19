@@ -7,7 +7,7 @@
 body {
   font-family: "Inter", sans-serif;
   color: #030201;
-  background-image: url(https://i.pinimg.com/736x/1e/81/75/1e8175902c6361b2cf8b44d43f8f65fc.jpg);
+  background-image: url(https://i.pinimg.com/736x/71/06/07/710607b900caf5b487d4eb393fbf886c.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: top center;
@@ -783,7 +783,7 @@ main,
   position: fixed;
   right: clamp(12px, 4vw, 34px);
   bottom: 20px;
-  color: #1a0089;
+  color: #b7cf4f;
   pointer-events: none;
   font-size: 0.55rem;
   font-weight: 700;
@@ -812,7 +812,7 @@ main,
   position: fixed;
   right: clamp(12px, 4vw, 34px);
   bottom: 35px;
-  color: #1a0089;
+  color: #b7cf4f;
   font-size: 1.2rem;
   font-weight: 500;
   padding: 1rem 0;
