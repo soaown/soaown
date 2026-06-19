@@ -245,6 +245,10 @@
 
   // ===== 8. add-form 표시/숨김 + 표지 이미지 =====
   function showAddForm() {
+    document
+      .getElementById("book-subcategory-list")
+      ?.style.setProperty("display", "none");
+
     const form = document.getElementById("add-form");
     if (!form) return;
 
@@ -258,6 +262,10 @@
   }
 
   function hideAddForm() {
+    document
+      .getElementById("book-subcategory-list")
+      ?.style.removeProperty("display");
+
     const form = document.getElementById('add-form');
     if (form) {
       form.style.display = 'none';

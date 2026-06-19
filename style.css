@@ -7,7 +7,7 @@
 body {
   font-family: "Inter", sans-serif;
   color: #030201;
-  background-image: url(https://i.pinimg.com/736x/71/06/07/710607b900caf5b487d4eb393fbf886c.jpg);
+  background-image: url(https://i.pinimg.com/1200x/6e/71/71/6e717113d989ebf9d47af6134a0cde03.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: top center;
@@ -455,6 +455,12 @@ main {
   display: flex;
   justify-content: left;
   gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .post-actions {
+    justify-content: center !important;
+  }
 }
 
 /* ===== 빈 페이지 (BOOK, KNOWLEDGE 임시) ===== */
@@ -1311,7 +1317,7 @@ body.admin-mode .admin-btn {
 @media (max-width: 600px) {
   .post-header .meta-grid {
     max-width: 100%;
-    padding: 1.4rem 1.4rem;
+    padding: 0.7rem 2rem;
   }
 }
 
