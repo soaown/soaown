@@ -7,7 +7,7 @@
 body {
   font-family: "Inter", sans-serif;
   color: #030201;
-  background-image: url(https://i.pinimg.com/1200x/ed/9c/01/ed9c01ffb48562402db6054e3bd39660.jpg);
+  background-image: url(https://i.pinimg.com/736x/1e/81/75/1e8175902c6361b2cf8b44d43f8f65fc.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: top center;
@@ -451,7 +451,7 @@ main {
 .post-actions {
   position: relative;
   z-index: 9999;
-  margin-left: 7rem;
+  margin-left: 6rem;
   display: flex;
   justify-content: left;
   gap: 1rem;
@@ -509,6 +509,10 @@ main {
 @media (max-width: 600px) {
   .post-header {
     padding: 0.01rem;
+    min-height: auto !important;
+    height: auto !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
   }
 }
 
@@ -584,11 +588,13 @@ main {
 
 @media (max-width: 600px) {
   .post-content {
-    margin-left: 0.25rem;
-    margin-right: 0.25rem;
-    font-weight: 500;
+    margin-left: 0.01rem;
+    margin-right: 0.01rem;
+    font-weight: 550;
     font-size: 0.5rem;
     letter-spacing: -0.01em;
+    border-radius: 80px 80px 100px 100px;
+    padding: 5rem 0.5rem 5rem 0.5rem;
   }
 }
 
@@ -1305,7 +1311,7 @@ body.admin-mode .admin-btn {
 @media (max-width: 600px) {
   .post-header .meta-grid {
     max-width: 100%;
-    padding: 0.7rem 1.4rem;
+    padding: 1.4rem 1.4rem;
   }
 }
 
@@ -1632,6 +1638,7 @@ body.admin-mode .admin-btn {
   font-size: 0.75rem;
   white-space: nowrap;
   gap: 0.25rem;
+  background-color: white;
 }
 
 .like-heart {
