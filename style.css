@@ -6,8 +6,8 @@
 
 body {
   font-family: "Inter", sans-serif;
-  background-image: url("https://i.pinimg.com/1200x/c5/1b/64/c51b645fe405be873542bcdd34ad142d.jpg");
   color: #030201;
+  background-image: url(https://i.pinimg.com/1200x/ed/9c/01/ed9c01ffb48562402db6054e3bd39660.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: top center;
@@ -18,6 +18,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+
 }
 
 /* ===== 헤더 (수평 정렬: 타이틀 왼쪽 + 네비 오른쪽) ===== */
@@ -561,9 +562,12 @@ main {
   text-align: left;
   font-size: 0.8rem;
   line-height: 1.5;
-  margin-left: 9rem;
-  margin-right: 9rem;
+  margin-left: 7.4rem;
+  margin-right: 7.4rem;
   font-weight: 400;
+  background-color: white;
+  border-radius: 10rem;
+  padding: 5rem;
 }
 
 .post-content,
@@ -1143,6 +1147,7 @@ main,
   width: 100%;
   height: auto;
   display: block;
+  border: 1px solid;
 }
 
 /* 리사이즈 핸들 */
