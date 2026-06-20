@@ -7,7 +7,7 @@
 body {
   font-family: "Inter", sans-serif;
   color: #030201;
-  background-image: url(https://i.pinimg.com/1200x/6e/71/71/6e717113d989ebf9d47af6134a0cde03.jpg);
+  background-image: url(https://i.pinimg.com/1200x/5c/20/29/5c202913711924fe898ffcc37790fee0.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: top center;
@@ -207,6 +207,7 @@ main {
   padding: 0.7rem 0.7rem;
   font-family: inherit;
   font-size: 0.9rem;
+  color: white;
 }
 
 .add-btn {
@@ -500,7 +501,6 @@ main {
 
 /* ===== 개별 글 페이지 ===== */
 .post-header {
-  margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
@@ -1500,7 +1500,6 @@ body.admin-mode .admin-btn {
   position: relative;
   overflow: hidden;
   padding: 1rem 2rem;
-  padding-top: 4rem;
   background: transparent;
 }
 
