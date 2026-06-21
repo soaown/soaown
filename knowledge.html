@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KNOWLEDGE | SOAOWN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="/soaown/assets/blue.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/soaown/assets/blue.png">
+</head>
+
+<body data-category="KNOWLEDGE">
+
+  <header>
+    <p class="site-title">
+      <a href="index.html">SOAOWN</a>
+    </p>
+    <nav>
+      <ul>
+        <li><a href="book.html">BOOK</a></li>
+        <li><a href="blog.html">BLOG</a></li>
+        <li><a href="knowledge.html" class="active" onclick="guardKnowledge(event)">KNOWLEDGE</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1 class="page-title">KNOWLEDGE</h1>
+    <div class="search-section">
+      <span class="fake-search">( scan )</span>
+      <input type="text" id="search-input" class="search-input"
+        placeholder="search search search search search search search search............" oninput="handleSearch(event)">
+      <button id="add-btn" class="add-btn" onclick="showAddForm()">( edit )</button>
+    </div>
+
+    <div class="add-section">
+      <form id="add-form" class="add-form" onsubmit="handleSubmit(event)" style="display:none;">
+        <textarea id="title-input" placeholder="제목" required rows="1"></textarea>
+        <div class="meta-grid">
+          <label><span>date: </span><input type="date" id="date-input"></label>
+          <label><span>category: </span><input type="text" id="category-input"></label>
+          <label><span>link: </span><input type="url" id="link-input"></label>
+          <label><span>author: </span><input type="text" id="author-input"></label>
+          <label><span>publisher: </span><input type="text" id="publisher-input"></label>
+          <label><span>details: </span><input type="text" id="details-input"></label>
+        </div>
+        <div class="editor-box">
+          <div class="editor-toolbar">
+            <button type="button" onclick="formatText('bold')">B</button>
+            <button type="button" onclick="formatText('justifyCenter')">=</button>
+            <button type="button" onclick="setTextColor('#ff0000')">R</button>
+            <button type="button" onclick="setTextColor('#ffffff')">W</button>
+            <button type="button" onclick="setTextColor('#245bdb')">B</button>
+            <button type="button" onclick="setHighlight('#D3F8B6')">초록</button>
+            <button type="button" onclick="setHighlight('#FBDBFF')">핑크</button>
+            <button type="button" onclick="setHighlight('#a0ccf6')">파랑</button>
+            <button type="button" onclick="setHighlight('#ffffff')">흰색</button>
+            <button type="button" onclick="setHighlight('#FF8f05')">주황</button>
+            <button type="button" onclick="insertFootnote()">[^]</button>
+            <button type="button" onclick="insertImage()">PHOTO</button>
+          </div>
+          <div id="content-input" contenteditable="true" data-placeholder="내용을 작성하세요..."></div>
+        </div>
+        <input type="file" id="image-input" accept="image/*" style="display:none;">
+        <div class="form-buttons">
+          <button type="button" onclick="hideAddForm()">취소</button>
+          <button type="submit">저장</button>
+        </div>
+      </form>
+    </div>
+
+    <ul class="item-list"></ul>
+  </main>
+
+  <button class="fab-top">⌃</button>
+  <script>
+    document.querySelector(".fab-top").addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
+  </script>
+  <div class="floating-text">
+    ©Collected since 2025-2026 Seoul by soaown
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="admin.js"></script>
+  <script src="script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOAOWN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="/soaown/assets/blue.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/soaown/assets/blue.png">
+</head>
+
+<body data-page="post">
+
+  <header>
+    <p class="site-title">
+      <a href="index.html">SOAOWN</a>
+    </p>
+    <nav>
+      <ul>
+        <li><a href="book.html">BOOK</a></li>
+        <li><a href="blog.html">BLOG</a></li>
+        <li><a href="knowledge.html" onclick="guardKnowledge(event)">KNOWLEDGE</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <article>
+      <header class="post-header">
+        <h1 class="post-title">로딩 중...</h1>
+        <div class="meta-grid">
+          <label><span>date: </span>
+            <p class="post-date"></p>
+          </label>
+          <label><span>category: </span>
+            <p class="post-category"></p>
+          </label>
+          <label><span>link: </span>
+            <p class="post-link"></p>
+          </label>
+          <label><span>author: </span>
+            <p class="post-author"></p>
+          </label>
+          <label><span>publisher: </span>
+            <p class="post-publisher"></p>
+          </label>
+          <label><span>details: </span>
+            <p class="post-details"></p>
+          </label>
+        </div>
+      </header>
+      <div class="post-content"></div>
+      <div class="post-like-wrap">
+        <button id="like-btn" class="like-btn" type="button">♥︎ <span id="like-count">0</span></button>
+      </div>
+    </article>
+  </main>
+
+  <div class="post-actions">
+    <button onclick="editPost()">MODIFY</button>
+    <button onclick="deletePost()">DELETE</button>
+  </div>
+
+  <button class="fab-top">⌃</button>
+  <script>
+    document.querySelector(".fab-top").addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
+  </script>
+  <div class="floating-text">
+    ©Collected since 2025-2026 Seoul by soaown
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="admin.js"></script>
+  <script src="script.js"></script>
+
+</body>
+
+</html>
