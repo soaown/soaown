@@ -7,10 +7,6 @@
 body {
   font-family: "Inter", sans-serif;
   color: #030201;
-  background-image: url(https://i.pinimg.com/1200x/5c/20/29/5c202913711924fe898ffcc37790fee0.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: top center;
   font-size: 16px;
   line-height: 1.5;
   padding: 0 clamp(1.5rem, 3vw, 3rem);
@@ -18,7 +14,18 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
 
+/* ===== 배경: 뷰포트에 고정된 별도 레이어 (비율 유지 + 꽉 채움 + 페이지 길이 무관) ===== */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url(https://i.pinimg.com/1200x/5c/20/29/5c202913711924fe898ffcc37790fee0.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* ===== 헤더 (수평 정렬: 타이틀 왼쪽 + 네비 오른쪽) ===== */
