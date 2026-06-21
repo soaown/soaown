@@ -20,7 +20,13 @@ body {
 body::before {
   content: "";
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(100vh + 100px);
+  /* 폴백 */
+  height: calc(100lvh + 100px);
+  /* 최대 뷰포트로 높이 고정 → 모바일 주소창 변화 시 재확대/이동 방지 */
   z-index: -1;
   background-image: url(https://i.pinimg.com/1200x/5c/20/29/5c202913711924fe898ffcc37790fee0.jpg);
   background-size: cover;
