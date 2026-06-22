@@ -418,7 +418,7 @@ main {
 
 .editor-box,
 .add-form #content-input {
-  background: color(display-p3 0.4587 0.7021 0.9766) !important;
+  background: white !important;
 }
 
 .add-form #content-input::placeholder {
