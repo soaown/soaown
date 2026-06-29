@@ -1674,7 +1674,7 @@ body.admin-mode .admin-btn {
 /* ===== book 소카테고리 ===== */
 .book-subcategory-list {
   width: min(1000px, 82vw);
-  margin: 1.5rem auto 4rem;
+  margin: 1rem auto 4rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
